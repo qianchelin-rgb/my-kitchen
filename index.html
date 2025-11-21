@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🍜 幸福食堂 - 最终完美版</title>
+    <title>🍜 幸福食堂 - 修复版</title>
     <style>
         :root {
             --bg: #fff8e1;
@@ -74,12 +74,12 @@
             background-image: repeating-linear-gradient(45deg, transparent 0, transparent 19px, #e0e0e0 20px);
         }
 
-        /* === 锅具 === */
+        /* === 锅具 (层级 5) === */
         .counter {
             position: absolute; top: -40px; left: 5%; width: 90%; height: 90px;
-            background: var(--wood-light); border-bottom: 8px solid var(--wood);
+            background: var(--wood-light); border-bottom: 12px solid var(--wood);
             border-radius: 10px; display: flex; justify-content: space-around; align-items: flex-end;
-            padding-bottom: 10px; z-index: 5; box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding-bottom: 10px; z-index: 5; box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
         
         .stove-slot { position: relative; width: 70px; height: 60px; display: flex; justify-content: center; align-items: flex-end; }
@@ -122,8 +122,11 @@
         .steam { position: absolute; top: -30px; left: 20px; font-size: 20px; opacity: 0; pointer-events: none; }
         .pot.cooking .steam { animation: rise 1.5s infinite; opacity: 1; }
 
-        /* 顾客 */
-        .seat-row { position: absolute; top: 60px; width: 100%; display: flex; justify-content: space-around; }
+        /* 顾客 (层级 20，确保在柜台前面) */
+        .seat-row { 
+            position: absolute; top: 60px; width: 100%; display: flex; justify-content: space-around; 
+            z-index: 20; /* 关键修复：比counter高 */
+        }
         .seat { width: 60px; height: 60px; background: rgba(0,0,0,0.05); border-radius: 50%; position: relative; }
         .cust {
             position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
@@ -132,15 +135,23 @@
         }
         .cust.show { opacity: 1; }
         .cust-face { font-size: 40px; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.1)); }
+        
+        /* 气泡优化 */
         .bubble {
-            background: #fff; border: 1px solid #333; padding: 2px 6px;
-            border-radius: 8px; font-size: 12px; margin-bottom: -5px; z-index: 2;
+            background: #fff; border: 2px solid #333; padding: 4px 10px;
+            border-radius: 12px; font-size: 14px; font-weight: bold; 
+            position: absolute; bottom: 100%; margin-bottom: 5px; /* 确保浮在头顶 */
             animation: float 2s infinite; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .bubble::after {
+            content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
+            border-width: 5px 5px 0; border-style: solid; border-color: #333 transparent transparent;
         }
 
         /* === 底部菜单 === */
         .controls {
-            background: #fff; padding: 15px; z-index: 20;
+            background: #fff; padding: 15px; z-index: 30; /* 比场景高 */
             box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0;
         }
         .home-menu-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
@@ -175,7 +186,7 @@
 
         .pot-act {
             position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 10px; pointer-events: none; opacity: 0; transition: 0.2s;
+            display: flex; gap: 10px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 25;
         }
         .pot-act.show { opacity: 1; pointer-events: auto; }
         .act-btn {
@@ -183,7 +194,7 @@
             font-weight: bold; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        /* === 弹窗系统 === */
+        /* === 弹窗 === */
         .modal-mask {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(0,0,0,0.5); z-index: 100; display: none;
@@ -270,6 +281,7 @@
                 <button class="act-btn" style="background:#ff7043" onclick="cook()">🔥 烹饪</button>
             </div>
 
+            <!-- 顾客容器 -->
             <div class="seat-row" id="seatBox"></div>
         </div>
     </div>
@@ -280,7 +292,7 @@
             <div class="menu-btn" onclick="openWarehouse()"><span class="btn-icon">📦</span><span class="btn-txt">仓库</span></div>
             <div class="menu-btn" onclick="openRecipes()"><span class="btn-icon">📖</span><span class="btn-txt">食谱</span></div>
             <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
-            <!-- 修复点：函数名 openAchieve -->
+            <!-- 修复函数名 openAchieve -->
             <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
             <div class="menu-btn save-btn" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt">保存</span></div>
             
@@ -313,7 +325,7 @@
 <div id="toast" class="toast">提示</div>
 
 <script>
-    // === 数据 ===
+    // === 数据定义 ===
     const ITEMS = {
         rice:{n:'大米',i:'🍚',p:3}, egg:{n:'鸡蛋',i:'🥚',p:5}, tomato:{n:'番茄',i:'🍅',p:6},
         noodle:{n:'面条',i:'🍜',p:5}, veg:{n:'青菜',i:'🥬',p:5}, potato:{n:'土豆',i:'🥔',p:5},
@@ -367,8 +379,8 @@
     let G = { money: 200, totalEarned: 0, day: 1, lv: 1, facLv: 1, inv: {}, prices: {}, menu: [], trend: null, potsUnlocked: 2, pots: [], seats: [null, null], queue: 0, selPot: -1, stats: {earn:0}, achieved: [], isPlaying: false };
 
     function loadGame() {
-        // 修改 key 以强制使用新存档，修复500金币问题
-        const save = localStorage.getItem('happyKitchen_Fixed_Final');
+        // 更换key强制刷新
+        const save = localStorage.getItem('happyKitchen_Final_V3.1');
         if(save) {
             try {
                 const data = JSON.parse(save);
@@ -379,9 +391,9 @@
             for(let k in ITEMS) G.inv[k] = 3;
         }
     }
-    function saveGame() { localStorage.setItem('happyKitchen_Fixed_Final', JSON.stringify(G)); }
+    function saveGame() { localStorage.setItem('happyKitchen_Final_V3.1', JSON.stringify(G)); }
     function manualSave() { saveGame(); toast('✅ 存档成功'); }
-    function resetGame() { if(confirm('确定要删除存档重来吗？(初始金币将重置为200)')){ localStorage.removeItem('happyKitchen_Fixed_Final'); location.reload(); } }
+    function resetGame() { if(confirm('确定要删除存档重来吗？(初始金币将重置为200)')){ localStorage.removeItem('happyKitchen_Final_V3.1'); location.reload(); } }
 
     function init() {
         loadGame();
@@ -487,10 +499,21 @@
     function endDay() { clearInterval(loopId); G.isPlaying=false; saveGame(); document.getElementById('modalReport').style.display='flex'; document.getElementById('repMoney').innerText=G.stats.earn; }
     function nextDay() { G.day++; saveGame(); closeModal(); document.getElementById('homeNav').style.display='grid'; document.getElementById('gameNav').style.display='none'; document.getElementById('endBtn').style.display='none'; init(); }
 
-    // === 修复逻辑 BUG 的弹窗渲染函数 ===
+    // 弹窗逻辑
+    function openAchieve() {
+        const el = document.getElementById('achList'); el.innerHTML = '';
+        ACHIEVEMENTS.forEach(a => {
+            const unlocked = G.achieved.includes(a.id);
+            const d = document.createElement('div');
+            d.className = `ach-item ${unlocked ? 'unlocked' : ''}`;
+            d.innerHTML = `<div class="ach-icon">${a.i}</div><div class="ach-info"><h4>${a.n}</h4><p>${a.desc}</p></div><div style="font-size:20px">${unlocked ? '✅' : '🔒'}</div>`;
+            el.appendChild(d);
+        });
+        document.getElementById('modalAchieve').style.display = 'flex';
+    }
+
     function openMarket() {
-        const el = document.getElementById('marketList');
-        el.innerHTML = '';
+        const el = document.getElementById('marketList'); el.innerHTML = '';
         Object.keys(ITEMS).forEach(k => {
             const item = ITEMS[k];
             const d = document.createElement('div');
@@ -505,8 +528,7 @@
     }
 
     function openRecipes() {
-        const el = document.getElementById('recipeList');
-        el.innerHTML = '';
+        const el = document.getElementById('recipeList'); el.innerHTML = '';
         RECIPES.forEach(r => {
             const locked = G.lv < r.lv;
             const d = document.createElement('div');
@@ -522,44 +544,23 @@
     }
 
     function openUpgrade() {
-        const el = document.getElementById('facList');
-        el.innerHTML = '';
+        const el = document.getElementById('facList'); el.innerHTML = '';
         FACILITIES.forEach(f => {
             const d = document.createElement('div');
             const isCur = G.facLv === f.lv;
             const isOwned = G.facLv > f.lv;
             const isLocked = G.lv < f.reqLv;
             d.className = `fac-item ${isCur ? 'current' : ''}`;
-            
-            let btnHtml = '';
-            if(isCur) btnHtml = '<small style="color:green">当前</small>';
-            else if(isOwned) btnHtml = '<small style="color:#999">已拥有</small>';
-            else if(isLocked) btnHtml = `<small style="color:#999">Lv.${f.reqLv}解锁</small>`;
-            else btnHtml = `<button class="up-btn" onclick="buyFac(${f.lv})">升级 $${f.cost}</button>`;
-
+            let btnHtml = isCur ? '<small style="color:green">当前</small>' : (isOwned ? '<small style="color:#999">已拥有</small>' : (isLocked ? `<small style="color:#999">Lv.${f.reqLv}解锁</small>` : `<button class="up-btn" onclick="buyFac(${f.lv})">升级 $${f.cost}</button>`));
             d.innerHTML = `<div><b>${f.name}</b><br><small style="color:#888">加成 ${Math.round(f.mult*100)}%</small></div>${btnHtml}`;
             el.appendChild(d);
         });
         document.getElementById('modalUpgrade').style.display = 'flex';
     }
 
-    function openAchieve() {
-        const el = document.getElementById('achList');
-        el.innerHTML = '';
-        ACHIEVEMENTS.forEach(a => {
-            const unlocked = G.achieved.includes(a.id);
-            const d = document.createElement('div');
-            d.className = `ach-item ${unlocked ? 'unlocked' : ''}`;
-            d.innerHTML = `<div class="ach-icon">${a.i}</div><div class="ach-info"><h4>${a.n}</h4><p>${a.desc}</p></div><div style="font-size:20px">${unlocked ? '✅' : '🔒'}</div>`;
-            el.appendChild(d);
-        });
-        document.getElementById('modalAchieve').style.display = 'flex';
-    }
-
     function openMenu() {
         document.getElementById('menuTitle').innerText = `📝 今日菜单 (${G.menu.length}/5)`;
-        const el = document.getElementById('menuSelection');
-        el.innerHTML = '';
+        const el = document.getElementById('menuSelection'); el.innerHTML = '';
         RECIPES.filter(r => r.lv <= G.lv).forEach(r => {
             const d = document.createElement('div');
             d.className = `grid-item ${G.menu.includes(r) ? 'sel' : ''}`;
@@ -575,8 +576,7 @@
     }
 
     function openWarehouse() {
-        const el = document.getElementById('whList');
-        el.innerHTML = '';
+        const el = document.getElementById('whList'); el.innerHTML = '';
         Object.keys(ITEMS).forEach(k => {
             const item = ITEMS[k];
             const d = document.createElement('div');
@@ -589,9 +589,7 @@
 
     function buyFac(lv) {
         const f = FACILITIES.find(x => x.lv === lv);
-        if(G.money >= f.cost) {
-            G.money -= f.cost; G.facLv = lv; updateUI(); saveGame(); openUpgrade(); toast('装修成功');
-        } else toast('钱不够');
+        if(G.money >= f.cost) { G.money -= f.cost; G.facLv = lv; updateUI(); saveGame(); openUpgrade(); toast('装修成功'); } else toast('钱不够');
     }
 
     function checkAch() {

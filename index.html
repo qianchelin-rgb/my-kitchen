@@ -3,252 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🍜 幸福食堂 - 修复版</title>
+    <title>💖 爱的厨房 </title>
     <style>
         :root {
-            --bg: #fff8e1;
-            --wood: #8d6e63;
-            --wood-light: #d7ccc8;
+            --bg: #fff3e0;
             --primary: #ff7043;
-            --green: #81c784;
-            --blue: #42a5f5;
-            --text: #4e342e;
-            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+            --green: #66bb6a;
+            --text: #3e2723;
+            --pot-body: #80cbc4;
+            --pot-stroke: #00695c;
         }
 
         body {
-            margin: 0; padding: 0; font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0; padding: 0; font-family: 'YouYuan', 'Microsoft YaHei', sans-serif;
             background: var(--bg); color: var(--text); height: 100vh; overflow: hidden;
             user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
-        .app { display: flex; flex-direction: column; height: 100%; max-width: 500px; margin: 0 auto; background: #fffcf5; position: relative; }
+        .app { display: flex; flex-direction: column; height: 100%; max-width: 500px; margin: 0 auto; background: #fff8e1; position: relative; }
 
-        /* 顶部栏 */
+        /* === 顶部 === */
         .top-bar {
-            padding: 15px; display: flex; justify-content: space-between;
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(5px);
-            border-bottom: 1px solid #eee; z-index: 10;
+            padding: 15px 15px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
+            border-bottom: 2px solid #ffe0b2; z-index: 20;
         }
         .badge {
-            background: #fff; border: 1px solid #ddd; padding: 5px 12px;
-            border-radius: 15px; font-size: 13px; font-weight: bold;
-            display: flex; align-items: center; gap: 5px;
+            background: #fff; border: 2px solid #ffe0b2; padding: 4px 10px;
+            border-radius: 20px; font-size: 13px; font-weight: bold;
+            display: flex; align-items: center; gap: 4px; color: #5d4037;
         }
+        .xp-track { width: 60px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; margin-top: 4px; }
+        .xp-fill { height: 100%; background: #66bb6a; width: 0%; transition: width 0.5s; }
 
-        /* === 场景区 === */
+        /* === 场景 === */
         .scene { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         
         .wall {
-            height: 40%; background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
-            background-size: 20px 20px; position: relative; border-bottom: 12px solid #fff;
+            height: 45%; position: relative; border-bottom: 12px solid #fff;
+            background-color: #fff3e0;
+            background-image: radial-gradient(#ffccbc 1px, transparent 1px);
+            background-size: 24px 24px;
         }
+        
+        .title-float {
+            position: absolute; top: 15%; width: 100%; text-align: center; pointer-events: none; z-index: 5;
+            transition: 0.3s;
+        }
+        .title-float.hidden { opacity: 0; transform: translateY(-20px); }
+        .main-title { font-size: 42px; color: #ff8a80; text-shadow: 3px 3px 0 #fff; margin: 0; font-weight: 900; letter-spacing: 2px; }
+        .sub-title { background: #fff; color: #ffab91; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
         .window {
             position: absolute; left: 20px; top: 20px; width: 100px; height: 70px;
-            background: #b3e5fc; border: 5px solid #fff; border-radius: 8px;
+            background: linear-gradient(#81d4fa, #e1f5fe); border: 6px solid #fff; border-radius: 12px;
             box-shadow: 0 5px 0 #eee; overflow: hidden;
         }
-        .window::after { content:''; position:absolute; left:50%; width:4px; height:100%; background:#fff; }
-        .window::before { content:''; position:absolute; top:50%; width:100%; height:4px; background:#fff; }
-        .cloud { position:absolute; top:10px; font-size:30px; opacity:0.8; animation: floatCloud 15s linear infinite; }
-        @keyframes floatCloud { from{left:-40px;} to{left:120px;} }
-        
+        .cloud { position:absolute; top:15px; font-size:30px; opacity:0.9; animation: cloudMove 25s linear infinite; }
+        @keyframes cloudMove { from{left:-40px;} to{left:120px;} }
+
         .board {
-            position: absolute; right: 20px; top: 20px; width: 120px; height: 80px;
-            background: #3e2723; border: 4px solid #a1887f; border-radius: 5px;
-            color: #fff; text-align: center; transform: rotate(-2deg);
-            display: flex; flex-direction: column; justify-content: center;
-            box-shadow: var(--shadow); cursor: pointer;
-        }
-        .board-title { font-size: 10px; color: #ffcc80; }
-        .board-icon { font-size: 32px; margin: 2px 0; }
-        .board-tag { font-size: 10px; background: #e53935; display: inline-block; padding: 0 5px; border-radius: 4px; margin: 0 auto; }
-
-        .fac-display {
-            position: absolute; bottom: 10px; right: 20px; background: rgba(255,255,255,0.8);
-            padding: 2px 8px; border-radius: 10px; font-size: 10px; color: #888;
-        }
-
-        .floor {
-            flex: 1; background: #f5f5f5; position: relative;
-            background-image: repeating-linear-gradient(45deg, transparent 0, transparent 19px, #e0e0e0 20px);
-        }
-
-        /* === 锅具 (层级 5) === */
-        .counter {
-            position: absolute; top: -40px; left: 5%; width: 90%; height: 90px;
-            background: var(--wood-light); border-bottom: 12px solid var(--wood);
-            border-radius: 10px; display: flex; justify-content: space-around; align-items: flex-end;
-            padding-bottom: 10px; z-index: 5; box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            position: absolute; right: 20px; top: 20px; width: 110px; height: 80px;
+            background: #4e342e; border: 5px solid #8d6e63; border-radius: 8px;
+            color: #fff; text-align: center; transform: rotate(-3deg); cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2); pointer-events: auto;
         }
         
-        .stove-slot { position: relative; width: 70px; height: 60px; display: flex; justify-content: center; align-items: flex-end; }
+        .floor {
+            flex: 1; background: #fbe9e7; position: relative;
+            background-image: repeating-linear-gradient(45deg, #fff 0, #fff 2px, transparent 3px, transparent 15px);
+        }
+
+        /* === 柜台与锅 === */
+        .counter {
+            position: absolute; top: -60px; left: 5%; width: 90%; height: 100px;
+            background: #d7ccc8; border-radius: 16px; border-bottom: 16px solid #8d6e63;
+            display: flex; justify-content: space-around; align-items: flex-end;
+            padding-bottom: 20px; z-index: 10; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .stove-unit { 
+            position: relative; width: 80px; height: 80px; 
+            display: flex; justify-content: center; align-items: flex-end;
+        }
         
         .burner {
-            position: absolute; bottom: 0; width: 60px; height: 12px;
-            background: #333; border-radius: 50%; border: 2px solid #555;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: absolute; bottom: 0; width: 64px; height: 14px;
+            background: #3e2723; border-radius: 50%; border: 2px solid #5d4037;
+            z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
+        
+        .pot { 
+            width: 72px; height: 58px; position: relative; cursor: pointer; 
+            z-index: 5; margin-bottom: 5px; transform-origin: bottom center;
+            transition: transform 0.2s; pointer-events: auto;
+        }
+        .pot:active { transform: scale(0.9); }
+        .pot.selected { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 15px 10px rgba(0,0,0,0.2)); }
 
-        .pot { width: 64px; height: 50px; position: relative; cursor: pointer; transition: 0.2s; z-index: 2; margin-bottom: 5px; }
-        .pot:active { transform: scale(0.95); }
-        .pot.selected { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 10px 5px rgba(0,0,0,0.2)); }
-        
         .pot-body {
-            width: 100%; height: 100%; 
-            background: linear-gradient(to right, #546e7a, #78909c 40%, #546e7a);
-            border-radius: 0 0 20px 20px; border: 1px solid #37474f; position: relative; overflow: hidden;
+            width: 100%; height: 100%; background: var(--pot-body);
+            border-radius: 6px 6px 30px 30px; border: 3px solid var(--pot-stroke);
+            position: relative; overflow: hidden;
         }
-        .pot-ear { position: absolute; top: 10px; width: 10px; height: 14px; background: #37474f; border-radius: 4px; }
-        .pot-ear.l { left: -8px; } .pot-ear.r { right: -8px; }
-        
         .pot-lid {
-            position: absolute; top: -8px; left: -2%; width: 104%; height: 16px;
-            background: rgba(255,255,255,0.5); border-radius: 50%; border: 2px solid #b0bec5;
+            position: absolute; top: -8px; left: -5%; width: 110%; height: 18px;
+            background: rgba(255,255,255,0.6); border-radius: 50%; 
+            border: 3px solid var(--pot-stroke); z-index: 6;
         }
         .lid-knob {
-            position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
-            width: 14px; height: 8px; background: #3e2723; border-radius: 4px;
+            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+            width: 18px; height: 10px; background: #3e2723; border-radius: 5px;
+            border-bottom: 2px solid rgba(0,0,0,0.3);
         }
+        .pot-handle { position: absolute; top: 12px; width: 12px; height: 16px; background: var(--pot-stroke); border-radius: 4px; }
+        .pot-handle.l { left: -8px; } .pot-handle.r { right: -8px; }
         
         .pot-icon {
-            position: absolute; top: -30px; left: 0; width: 100%; text-align: center;
-            font-size: 24px; opacity: 0; transition: 0.3s; transform: translateY(10px);
+            position: absolute; top: -40px; width: 100%; text-align: center;
+            font-size: 28px; opacity: 0; transform: translateY(15px); transition: 0.3s;
+            z-index: 7;
         }
         .pot.has-food .pot-icon { opacity: 1; transform: translateY(0); }
-        
-        .pot.cooking .pot-body { background: linear-gradient(to right, #d32f2f, #ef5350 40%, #d32f2f); animation: shake 0.5s infinite; }
-        .pot.done .pot-body { background: linear-gradient(to right, #388e3c, #66bb6a 40%, #388e3c); border-color: #fff; }
-        .steam { position: absolute; top: -30px; left: 20px; font-size: 20px; opacity: 0; pointer-events: none; }
-        .pot.cooking .steam { animation: rise 1.5s infinite; opacity: 1; }
+        .pot.cooking .pot-body { background: #ef5350; animation: cookBob 0.4s infinite alternate; }
+        .pot.done .pot-body { background: #66bb6a; border-color: #fff; }
 
-        /* 顾客 (层级 20，确保在柜台前面) */
+        .pot-locked {
+            width: 64px; height: 50px; margin-bottom: 5px;
+            background: rgba(0,0,0,0.05); border-radius: 20px;
+            border: 3px dashed #bdbdbd; color: #9e9e9e;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 10px; cursor: pointer; pointer-events: auto;
+        }
+
+        /* 座位优化 */
         .seat-row { 
-            position: absolute; top: 60px; width: 100%; display: flex; justify-content: space-around; 
-            z-index: 20; /* 关键修复：比counter高 */
+            position: absolute; top: 180px; width: 100%; display: flex; justify-content: center; gap: 10px;
+            z-index: 20; pointer-events: none;
         }
-        .seat { width: 60px; height: 60px; background: rgba(0,0,0,0.05); border-radius: 50%; position: relative; }
-        .cust {
-            position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center;
-            opacity: 0; transition: 0.5s; cursor: pointer;
+        .seat-wrapper { width: 70px; height: 100px; position: relative; display: flex; justify-content: center; }
+        .stool {
+            width: 45px; height: 35px; background: #8d6e63; border-radius: 50%;
+            border: 3px solid #5d4037; box-shadow: 0 5px 0 #3e2723;
+            position: absolute; bottom: 20px; z-index: 1;
         }
-        .cust.show { opacity: 1; }
-        .cust-face { font-size: 40px; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.1)); }
+        .stool-locked {
+            width: 45px; height: 35px; background: rgba(0,0,0,0.1); border-radius: 50%;
+            border: 2px dashed #aaa; position: absolute; bottom: 20px; z-index: 1;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888;
+            cursor: pointer; pointer-events: auto;
+        }
         
-        /* 气泡优化 */
-        .bubble {
-            background: #fff; border: 2px solid #333; padding: 4px 10px;
-            border-radius: 12px; font-size: 14px; font-weight: bold; 
-            position: absolute; bottom: 100%; margin-bottom: 5px; /* 确保浮在头顶 */
-            animation: float 2s infinite; white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        .cust {
+            position: absolute; bottom: 45px; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transition: 0.4s; z-index: 5; pointer-events: auto; cursor: pointer;
+            transform: scale(0.5);
         }
-        .bubble::after {
-            content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%);
-            border-width: 5px 5px 0; border-style: solid; border-color: #333 transparent transparent;
+        .cust.show { opacity: 1; transform: scale(1); }
+        .cust-head { font-size: 44px; z-index: 2; }
+        .cust-body { width: 40px; height: 28px; background: #90caf9; margin-top: -8px; border-radius: 15px 15px 5px 5px; z-index: 1; border: 2px solid rgba(0,0,0,0.1); }
+        .bubble {
+            background: #fff; border: 3px solid #4e342e; padding: 4px 8px;
+            border-radius: 14px; font-size: 16px; font-weight: bold; margin-bottom: 5px;
+            z-index: 30; animation: float 2s infinite; white-space: nowrap;
+        }
+        .bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid; border-color: #4e342e transparent transparent; }
+
+        /* 进度条 */
+        .timer-track {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 5px; background: #eee; border: 1px solid #3e2723;
+            border-radius: 4px; overflow: hidden; z-index: 40; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .timer-fill {
+            height: 100%; background: #66bb6a; width: 100%;
+            transition: width 0.05s linear, background 0.2s;
         }
 
         /* === 底部菜单 === */
         .controls {
-            background: #fff; padding: 15px; z-index: 30; /* 比场景高 */
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0;
+            background: #fff; padding: 20px; z-index: 50;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.05); border-radius: 24px 24px 0 0;
+            pointer-events: auto; display: flex; flex-direction: column; gap: 15px;
         }
-        .home-menu-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+        
+        .home-menu-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; 
+        }
         
         .menu-btn {
-            background: #f9f9f9; border: 1px solid #eee; border-radius: 15px;
-            padding: 8px 5px; text-align: center; cursor: pointer; transition: 0.1s;
+            background: #f9f9f9; border: 2px solid #eee; border-radius: 16px;
+            padding: 10px 0; text-align: center; cursor: pointer; transition: 0.1s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .menu-btn:active { transform: scale(0.96); background: #eee; }
-        .btn-icon { font-size: 20px; margin-bottom: 2px; }
-        .btn-txt { font-size: 11px; font-weight: bold; color: #666; }
+        .menu-btn:active { transform: scale(0.95); background: #eee; }
+        .btn-icon { font-size: 24px; margin-bottom: 4px; }
+        .btn-txt { font-size: 12px; font-weight: bold; color: #666; }
         
+        .start-btn-container {
+            width: 100%; display: flex; justify-content: center; margin-top: 10px;
+        }
         .start-btn {
-            grid-column: span 4; background: var(--primary); color: white; border: none;
-            padding: 12px; font-size: 16px; margin-top: 5px; box-shadow: 0 4px 10px rgba(255, 112, 67, 0.3);
-            flex-direction: row; gap: 8px;
+            width: 100%; background: linear-gradient(to right, #ff7043, #ff8a65);
+            color: white; border: none; padding: 18px; font-size: 18px;
+            border-radius: 20px; box-shadow: 0 8px 20px rgba(255, 112, 67, 0.3);
+            font-weight: 900; cursor: pointer; text-align: center;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
         }
-        .start-btn .btn-txt { color: white; font-size: 16px; }
+        .start-btn:active { transform: scale(0.98); }
 
-        .save-btn { background: #e8f5e9; border-color: #c8e6c9; }
-        .save-btn .btn-txt { color: #2e7d32; }
+        .game-menu { display: none; overflow-x: auto; gap: 10px; padding-bottom: 10px; }
+        .ing-card { flex: 0 0 60px; height: 70px; background: #fff; border: 2px solid #eee; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .ing-card:active { background: #f0f0f0; border-color: #ccc; transform: scale(0.95); }
+        .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 1px 6px; border-radius: 10px; margin-top: 4px; }
 
-        .game-menu { display: none; overflow-x: auto; gap: 8px; padding-bottom: 5px; }
-        .ing-card {
-            flex: 0 0 55px; height: 65px; background: #fff; border: 1px solid #ddd;
-            border-radius: 10px; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; cursor: pointer; position: relative;
-        }
-        .ing-card:active { background: #f0f0f0; }
-        .ing-qty { font-size: 10px; color: #888; }
-
-        .pot-act {
-            position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 10px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 25;
-        }
+        .pot-act { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 40; }
         .pot-act.show { opacity: 1; pointer-events: auto; }
-        .act-btn {
-            border: none; padding: 8px 16px; border-radius: 20px; color: white;
-            font-weight: bold; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.2);
-        }
+        .act-btn { border: none; padding: 10px 25px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 14px; }
 
-        /* === 弹窗 === */
-        .modal-mask {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.5); z-index: 100; display: none;
-            align-items: center; justify-content: center;
-        }
-        .modal {
-            background: #fff; width: 85%; max-width: 400px; max-height: 85vh;
-            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: pop 0.3s;
-            display: flex; flex-direction: column;
-        }
-        
-        .modal-head { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        /* 弹窗通用 */
+        .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal { background: #fff; width: 85%; max-width: 400px; max-height: 85vh; border-radius: 24px; display: flex; flex-direction: column; animation: pop 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-head { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
         .modal-head h3 { margin: 0; font-size: 18px; }
-        .close-x { font-size: 24px; cursor: pointer; color: #aaa; }
-        .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
-        .modal-foot { padding: 15px; border-top: 1px solid #eee; background: #fff; border-radius: 0 0 20px 20px; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+        .modal-foot { padding: 15px; border-top: 1px solid #f0f0f0; }
+        .list-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .grid-item { border: 1px solid #eee; border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; position: relative; transition:0.1s; }
+        .grid-item.sel { background: #fff3e0; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
 
-        /* 列表样式 */
-        .list-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .grid-item { border: 1px solid #eee; border-radius: 8px; padding: 8px; text-align: center; cursor: pointer; position: relative; }
-        .grid-item.sel { background: #fff3e0; border-color: var(--primary); }
-        .grid-item.locked { opacity: 0.5; filter: grayscale(1); background: #f5f5f5; cursor: not-allowed; }
-        
-        .stock-tag { background: #f5f5f5; color: #666; font-size: 10px; padding: 2px 6px; border-radius: 10px; display: inline-block; margin-top: 2px; font-weight: bold; }
-
-        .ach-item { display: flex; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 8px; background: #fcfcfc; }
-        .ach-item.unlocked { background: #fff8e1; border-color: #ffca28; }
-        .ach-icon { font-size: 30px; width: 50px; height: 50px; background: #eee; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 10px; filter: grayscale(100%); opacity: 0.5; }
-        .ach-item.unlocked .ach-icon { filter: grayscale(0); opacity: 1; background: #fff; border: 2px solid #ffca28; }
-        .ach-info h4 { margin: 0; font-size: 14px; } .ach-info p { margin: 2px 0 0; font-size: 11px; color: #888; }
-        
-        .fac-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 8px; }
-        .fac-item.current { background: #e8f5e9; border-color: var(--green); }
-        .up-btn { background: var(--blue); color: white; border: none; padding: 5px 10px; border-radius: 15px; font-size: 12px; cursor: pointer; }
-
-        .recipe-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #f0f0f0; }
-        .recipe-info { flex: 1; margin-left: 10px; }
-
-        @keyframes shake { 0%{transform:rotate(0);} 25%{transform:rotate(3deg);} 75%{transform:rotate(-3deg);} }
-        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);} }
-        @keyframes rise { 0%{transform:translateY(0);opacity:0.8;} 100%{transform:translateY(-20px);opacity:0;} }
+        @keyframes cookBob { 0%{transform:translateY(0);} 50%{transform:translateY(-2px);} 100%{transform:translateY(0);} }
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
         @keyframes pop { from{transform:scale(0.9);opacity:0;} to{transform:scale(1);opacity:1;} }
 
-        .ach-toast {
-            position: fixed; top: -80px; left: 50%; transform: translateX(-50%);
-            background: #fff; border-radius: 30px; padding: 8px 20px;
-            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4); z-index: 200;
-            display: flex; align-items: center; gap: 10px; border: 2px solid #ffca28;
-            transition: top 0.5s; width: max-content;
-        }
-        .ach-toast.show { top: 20px; }
-
-        .toast { position: fixed; top: 45%; left: 50%; transform: translate(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 20px; opacity: 0; pointer-events: none; z-index: 500; transition: 0.3s; }
-        .end-btn { width: 100%; text-align: center; margin-top: 10px; font-size: 12px; color: #e53935; cursor: pointer; display: none; }
+        .toast { position: fixed; top: 45%; left: 50%; transform: translate(-50%); background: rgba(0,0,0,0.85); color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; pointer-events: none; z-index: 500; transition: 0.3s; }
+        .end-btn { width: 100%; text-align: center; margin-top: 15px; font-size: 12px; color: #e53935; cursor: pointer; display: none; text-decoration: underline; }
         .close-x { font-size: 24px; cursor: pointer; color: #aaa; }
     </style>
 </head>
@@ -258,356 +248,418 @@
     <div class="top-bar">
         <div class="badge">💰 <span id="uiMoney">0</span></div>
         <div class="badge">📅 <span id="uiDay">1</span></div>
-        <div class="badge" style="background:#5d4037; color:#fff; border:none;">Lv.<span id="uiLv">1</span></div>
+        <div class="badge">👥 <span id="uiQueue">0</span></div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end;">
+            <div style="font-size:12px; font-weight:bold; background:#5d4037; color:white; padding:2px 8px; border-radius:10px;">Lv.<span id="uiLv">1</span></div>
+            <div class="xp-track"><div class="xp-fill" id="uiXp"></div></div>
+        </div>
     </div>
 
     <div class="scene">
+        <div class="title-float" id="homeTitle">
+            <h1 class="main-title">爱的厨房！</h1>
+            <span class="sub-title">Love & Cooking</span>
+        </div>
+
         <div class="wall">
             <div class="window"><div class="cloud">☁️</div></div>
-            <div class="board" onclick="toast('今日推荐：售价翻倍！')">
-                <div class="board-title">TODAY</div>
-                <div class="board-icon" id="trendIcon">?</div>
-                <div class="board-tag">HOT</div>
+            <div class="board" onclick="toast('必吃榜：收益翻倍！')">
+                <div style="font-size:10px;color:#ffcc80">TODAY</div>
+                <div style="font-size:30px" id="trendIcon">?</div>
+                <div style="font-size:10px;background:#e53935;padding:0 5px;border-radius:4px;color:white">HOT</div>
             </div>
-            <div class="fac-display" id="uiFacName">🏠 简陋摊位</div>
         </div>
+        
         <div class="floor">
-            <div class="counter">
-                <div id="potBox" style="display:flex; width:100%; justify-content:space-around;"></div>
-            </div>
+            <div class="counter"><div id="potBox" style="display:flex; width:100%; justify-content:space-around;"></div></div>
             
             <div class="pot-act" id="potAct">
-                <button class="act-btn" style="background:#ef5350" onclick="clearPot()">🗑️ 倒掉</button>
-                <button class="act-btn" style="background:#ff7043" onclick="cook()">🔥 烹饪</button>
+                <button class="act-btn" style="background:#ef5350" onclick="clearPot()">🗑️</button>
+                <button class="act-btn" style="background:#ff7043" onclick="cook()">🔥 2s</button>
             </div>
 
-            <!-- 顾客容器 -->
             <div class="seat-row" id="seatBox"></div>
         </div>
     </div>
 
     <div class="controls">
-        <div class="home-menu-grid" id="homeNav">
-            <div class="menu-btn" onclick="openMarket()"><span class="btn-icon">🥦</span><span class="btn-txt">采购</span></div>
-            <div class="menu-btn" onclick="openWarehouse()"><span class="btn-icon">📦</span><span class="btn-txt">仓库</span></div>
-            <div class="menu-btn" onclick="openRecipes()"><span class="btn-icon">📖</span><span class="btn-txt">食谱</span></div>
-            <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
-            <!-- 修复函数名 openAchieve -->
-            <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
-            <div class="menu-btn save-btn" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt">保存</span></div>
-            
-            <div class="menu-btn start-btn" onclick="openMenu()">
-                <div class="btn-icon">🍳</div><div class="btn-txt">选择菜单 & 开始营业</div>
+        <div id="homeNav">
+            <div class="home-menu-grid">
+                <div class="menu-btn" onclick="openMarket()"><span class="btn-icon">🥦</span><span class="btn-txt">采购</span></div>
+                <div class="menu-btn" onclick="openWarehouse()"><span class="btn-icon">📦</span><span class="btn-txt">仓库</span></div>
+                <div class="menu-btn" onclick="openRecipes()"><span class="btn-icon">📖</span><span class="btn-txt">食谱</span></div>
+                <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
+                <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
+                <div class="menu-btn" style="background:#e8f5e9; border-color:#c8e6c9;" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt" style="color:#2e7d32">保存</span></div>
             </div>
-            <div style="grid-column:span 5; text-align:center; margin-top:5px;">
-                <span style="font-size:10px; color:#999; cursor:pointer; text-decoration:underline;" onclick="resetGame()">⚠️ 清除存档重开</span>
+            
+            <div class="start-btn-container">
+                <button class="start-btn" onclick="checkAndOpenMenu()">
+                    <span style="font-size:24px">🍳</span> 选择菜单 & 开始营业
+                </button>
+            </div>
+            
+            <div style="text-align:center; margin-top:15px;">
+                <span style="font-size:10px; color:#ccc; cursor:pointer; text-decoration:underline;" onclick="resetGame()">⚠️ 清除存档重开</span>
             </div>
         </div>
 
         <div class="game-menu" id="gameNav"></div>
-        <div class="end-btn" id="endBtn" onclick="endDay()">🛑 结束营业结算</div>
+        <div style="display:none; text-align:center; margin-top:10px;" id="endBtn">
+            <span style="font-size:12px; color:#e53935; cursor:pointer;" onclick="endDay()">🛑 结束营业结算</span>
+        </div>
     </div>
 </div>
 
 <!-- 弹窗 -->
-<div id="modalAchieve" class="modal-mask"><div class="modal"><div class="modal-head"><h3>🏆 荣誉殿堂</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="achList"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
-<div id="modalUpgrade" class="modal-mask"><div class="modal"><div class="modal-head"><h3>🏗️ 设施升级</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="facList"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
-<div id="modalRecipes" class="modal-mask"><div class="modal"><div class="modal-head"><h3>📖 食谱大全</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="recipeList"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
-<div id="modalWarehouse" class="modal-mask"><div class="modal"><div class="modal-head"><h3>📦 仓库</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><div class="list-grid" id="whList"></div></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
-<div id="modalMarket" class="modal-mask"><div class="modal"><div class="modal-head"><h3>🥦 菜市场</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><p style="font-size:12px;color:#999;margin:0 0 10px">价格波动</p><div class="list-grid" id="marketList"></div></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">完成</button></div></div></div>
 <div id="modalMenu" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="menuTitle">📝 今日菜单</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><div class="list-grid" id="menuSelection"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="startBusiness()">🚀 开店</button></div></div></div>
-<div id="modalReport" class="modal-mask"><div class="modal"><div class="modal-body" style="text-align:center"><div style="font-size:50px">💰</div><h2>今日营收</h2><h1 style="color:var(--green)">+<span id="repMoney">0</span></h1></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="nextDay()">💤 休息 (自动保存)</button></div></div></div>
+<div id="modalCommon" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="commTitle"></h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="commBody"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
+<div id="modalReport" class="modal-mask"><div class="modal"><div class="modal-body" style="text-align:center"><div style="font-size:50px">💰</div><h2>营收</h2><h1 style="color:green">+<span id="repMoney">0</span></h1></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="nextDay()">💤 休息</button></div></div></div>
+<div id="modalGameOver" class="modal-mask" style="z-index:200;"><div class="modal" style="width:280px;height:auto;"><div class="modal-body" style="text-align:center;padding-top:20px;"><div style="font-size:50px;margin-bottom:10px">🚫</div><div style="font-weight:bold;color:#e53935">食材不足！</div><div id="gameOverMsg" style="font-size:12px;color:#666;margin-top:5px"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="closeGameOver()">知道了，结算</button></div></div></div>
 
-<div class="ach-toast" id="achToast">
-    <div style="font-size:30px">🏆</div>
-    <div><b style="color:#f57f17">成就解锁!</b><div id="achName" style="font-size:12px;color:#666"></div></div>
-</div>
 <div id="toast" class="toast">提示</div>
 
 <script>
-    // === 数据定义 ===
-    const ITEMS = {
-        rice:{n:'大米',i:'🍚',p:3}, egg:{n:'鸡蛋',i:'🥚',p:5}, tomato:{n:'番茄',i:'🍅',p:6},
-        noodle:{n:'面条',i:'🍜',p:5}, veg:{n:'青菜',i:'🥬',p:5}, potato:{n:'土豆',i:'🥔',p:5},
-        meat:{n:'鲜肉',i:'🥩',p:18}, fish:{n:'鲜鱼',i:'🐟',p:23}, bread:{n:'面包',i:'🍞',p:8},
-        flour:{n:'面粉',i:'🥡',p:6}, sugar:{n:'糖',i:'🍬',p:5}, milk:{n:'牛奶',i:'🥛',p:8},
-        chicken:{n:'鸡肉',i:'🍗',p:15}, tofu:{n:'豆腐',i:'🧊',p:6}, shrimp:{n:'虾仁',i:'🍤',p:23},
-        cheese:{n:'奶酪',i:'🧀',p:12}
-    };
-    const RECIPES = [
-        {id:'r1', n:'白米饭', req:['rice'], p:8, i:'🍚', lv:1},
-        {id:'r2', n:'荷包蛋', req:['egg'], p:12, i:'🍳', lv:1},
-        {id:'r3', n:'番茄炒蛋', req:['egg','tomato'], p:30, i:'🥘', lv:1},
-        {id:'r4', n:'清汤面', req:['noodle'], p:18, i:'🍜', lv:3},
-        {id:'r5', n:'炸薯条', req:['potato'], p:22, i:'🍟', lv:3},
-        {id:'r6', n:'三明治', req:['bread','egg'], p:35, i:'🥪', lv:5},
-        {id:'r7', n:'蔬菜沙拉', req:['veg','tomato'], p:28, i:'🥗', lv:5},
-        {id:'r8', n:'蛋炒饭', req:['rice','egg'], p:32, i:'🍛', lv:7},
-        {id:'r9', n:'豆腐汤', req:['tofu','veg'], p:30, i:'🍲', lv:7},
-        {id:'r10', n:'牛奶布丁', req:['milk','sugar'], p:40, i:'🍮', lv:9},
-        {id:'r11', n:'红烧肉', req:['meat','sugar'], p:65, i:'🍖', lv:9},
-        {id:'r12', n:'炸鸡', req:['chicken','flour'], p:60, i:'🍗', lv:11},
-        {id:'r13', n:'牛肉面', req:['noodle','meat'], p:70, i:'🍝', lv:11},
-        {id:'r14', n:'鲜虾意面', req:['noodle','shrimp'], p:85, i:'🍤', lv:13},
-        {id:'r15', n:'麻婆豆腐', req:['tofu','meat'], p:75, i:'🥘', lv:13},
-        {id:'r16', n:'芝士蛋糕', req:['flour','cheese','sugar'], p:90, i:'🍰', lv:15},
-        {id:'r17', n:'披萨', req:['flour','cheese','tomato'], p:95, i:'🍕', lv:17},
-        {id:'r18', n:'炸鱼薯条', req:['fish','potato'], p:80, i:'🍱', lv:19},
-        {id:'r19', n:'甜甜圈', req:['flour','sugar'], p:50, i:'🍩', lv:21},
-        {id:'r20', n:'海鲜大餐', req:['fish','shrimp'], p:120, i:'🦞', lv:25}
-    ];
-    const FACILITIES = [
-        {lv:1, name:'简陋摊位', mult:1.0, cost:0, reqLv:1},
-        {lv:2, name:'温馨小店', mult:1.1, cost:500, reqLv:5},
-        {lv:3, name:'精致餐馆', mult:1.2, cost:1000, reqLv:10},
-        {lv:4, name:'豪华餐厅', mult:1.3, cost:1500, reqLv:15},
-        {lv:5, name:'星级地标', mult:1.4, cost:2500, reqLv:20},
-        {lv:6, name:'美食殿堂', mult:1.5, cost:5000, reqLv:30}
-    ];
-    const ACHIEVEMENTS = [
-        {id:'first', n:'第一桶金', desc:'第一次获得金币', i:'🪙', check:g=>g.totalEarned>0},
-        {id:'1k', n:'初来乍到', desc:'赚取1000金币', i:'🥉', check:g=>g.totalEarned>=1000},
-        {id:'5k', n:'小小店长', desc:'赚取5000金币', i:'🥈', check:g=>g.totalEarned>=5000},
-        {id:'1w', n:'万元富翁', desc:'赚取10000金币', i:'🥇', check:g=>g.totalEarned>=10000},
-        {id:'10rec', n:'小小厨师', desc:'解锁10个食谱', i:'📜', check:g=>RECIPES.filter(r=>r.lv<=g.lv).length>=10},
-        {id:'allrec', n:'米其林大厨', desc:'解锁全部食谱', i:'👑', check:g=>RECIPES.filter(r=>r.lv<=g.lv).length>=RECIPES.length},
-        {id:'fac2', n:'店铺翻新', desc:'设施升级到2级', i:'🔨', check:g=>g.facLv>=2},
-        {id:'fac6', n:'五星餐厅', desc:'设施升级到满级', i:'🏰', check:g=>g.facLv>=6}
+    const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'🧊',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
+    const RECIPES=[{id:'r1',n:'白米饭',req:['rice'],p:8,i:'🍚',lv:1},{id:'r2',n:'荷包蛋',req:['egg'],p:12,i:'🍳',lv:1},{id:'r3',n:'番茄炒蛋',req:['egg','tomato'],p:30,i:'🥘',lv:1},{id:'r4',n:'清汤面',req:['noodle'],p:18,i:'🍜',lv:3},{id:'r5',n:'炸薯条',req:['potato'],p:22,i:'🍟',lv:3},{id:'r6',n:'三明治',req:['bread','egg'],p:35,i:'🥪',lv:5},{id:'r7',n:'蔬菜沙拉',req:['veg','tomato'],p:28,i:'🥗',lv:5},{id:'r8',n:'蛋炒饭',req:['rice','egg'],p:32,i:'🍛',lv:7},{id:'r9',n:'豆腐汤',req:['tofu','veg'],p:30,i:'🍲',lv:7},{id:'r10',n:'牛奶布丁',req:['milk','sugar'],p:40,i:'🍮',lv:9},{id:'r11',n:'红烧肉',req:['meat','sugar'],p:65,i:'🍖',lv:9},{id:'r12',n:'炸鸡',req:['chicken','flour'],p:60,i:'🍗',lv:11},{id:'r13',n:'牛肉面',req:['noodle','meat'],p:70,i:'🍝',lv:11},{id:'r14',n:'鲜虾意面',req:['noodle','shrimp'],p:85,i:'🍤',lv:13},{id:'r15',n:'麻婆豆腐',req:['tofu','meat'],p:75,i:'🥘',lv:13},{id:'r16',n:'芝士蛋糕',req:['flour','cheese','sugar'],p:90,i:'🍰',lv:15},{id:'r17',n:'披萨',req:['flour','cheese','tomato'],p:95,i:'🍕',lv:17},{id:'r18',n:'炸鱼薯条',req:['fish','potato'],p:80,i:'🍱',lv:19},{id:'r19',n:'甜甜圈',req:['flour','sugar'],p:50,i:'🍩',lv:21},{id:'r20',n:'海鲜大餐',req:['fish','shrimp'],p:120,i:'🦞',lv:25}];
+    const FACILITIES=[{lv:1,name:'简陋',mult:1.0,cost:0,req:1},{lv:2,name:'温馨',mult:1.1,cost:500,req:5},{lv:3,name:'精致',mult:1.2,cost:1000,req:10},{lv:4,name:'豪华',mult:1.3,cost:1500,req:15},{lv:5,name:'星级',mult:1.4,cost:2500,req:20},{lv:6,name:'殿堂',mult:1.5,cost:5000,req:30}];
+    const ACHIEVEMENTS=[
+        {id:'1',n:'第一桶金',d:'获利',i:'💰',c:g=>g.totalEarned>0},
+        {id:'2',n:'千元户',d:'赚1000',i:'💴',c:g=>g.totalEarned>=1000},
+        {id:'3',n:'万元户',d:'赚10000',i:'💎',c:g=>g.totalEarned>=10000},
+        {id:'4',n:'小有名气',d:'Lv10',i:'🏅',c:g=>g.lv>=10}
     ];
 
-    // 初始 200 金币
-    let G = { money: 200, totalEarned: 0, day: 1, lv: 1, facLv: 1, inv: {}, prices: {}, menu: [], trend: null, potsUnlocked: 2, pots: [], seats: [null, null], queue: 0, selPot: -1, stats: {earn:0}, achieved: [], isPlaying: false };
+    let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0},achieved:[],isPlaying:false};
 
-    function loadGame() {
-        // 更换key强制刷新
-        const save = localStorage.getItem('happyKitchen_Final_V3.1');
-        if(save) {
-            try {
-                const data = JSON.parse(save);
-                G = {...G, ...data};
-                if(G.trend) G.trend = RECIPES.find(r=>r.id===G.trend.id) || RECIPES[0];
-            } catch(e){}
-        } else {
-            for(let k in ITEMS) G.inv[k] = 3;
-        }
+    function loadGame(){ 
+        const s=localStorage.getItem('HK_V24_Exp'); 
+        if(s){
+            try{
+                const d=JSON.parse(s);
+                G={...G,...d};
+                if(G.trend)G.trend=RECIPES.find(r=>r.id===G.trend.id)||RECIPES[0];
+                if(typeof G.seatsUnlocked === 'undefined') G.seatsUnlocked = 2;
+                while(G.seats.length < 4) G.seats.push(null);
+            }catch(e){}
+        }else{
+            for(let k in ITEMS)G.inv[k]=3;
+        } 
+        if(!G.pots || G.pots.length < 2) { 
+            G.pots=[]; for(let i=0;i<2;i++) G.pots.push({items:[],status:i<G.potsUnlocked?'idle':'locked',res:null}); 
+        } 
     }
-    function saveGame() { localStorage.setItem('happyKitchen_Final_V3.1', JSON.stringify(G)); }
-    function manualSave() { saveGame(); toast('✅ 存档成功'); }
-    function resetGame() { if(confirm('确定要删除存档重来吗？(初始金币将重置为200)')){ localStorage.removeItem('happyKitchen_Final_V3.1'); location.reload(); } }
+    function saveGame(){ localStorage.setItem('HK_V24_Exp',JSON.stringify(G)); }
+    function manualSave(){ saveGame(); toast('✅ 存档成功'); }
+    function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V24_Exp');location.reload();} }
 
-    function init() {
-        loadGame();
-        for(let k in ITEMS) G.prices[k] = Math.ceil(ITEMS[k].p * (0.9 + Math.random()*0.3));
-        if(!G.trend) {
-            let u = RECIPES.filter(r=>r.lv<=G.lv);
-            G.trend = u[Math.floor(Math.random()*u.length)] || RECIPES[0];
-        }
-        updateUI(); checkAch();
-        G.pots=[]; for(let i=0; i<G.potsUnlocked; i++) G.pots.push({items:[], status:'idle', res:null});
-        renderScene();
+    function init(){ 
+        loadGame(); for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); 
+        if(!G.trend){let u=RECIPES.filter(r=>r.lv<=G.lv);G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0];} 
+        updateUI(); 
+        try { checkAch(); } catch(e) { console.error(e); } 
+        G.seats=[null,null,null,null]; 
+        renderScene(); 
     }
-    function updateUI() {
-        document.getElementById('uiMoney').innerText=G.money;
-        document.getElementById('uiDay').innerText=G.day;
-        document.getElementById('uiLv').innerText=G.lv;
-        document.getElementById('trendIcon').innerText=G.trend.i;
-        let fac = FACILITIES[G.facLv-1];
-        document.getElementById('uiFacName').innerText = `🏠 ${fac.name} (${Math.round(fac.mult*100)}%)`;
+    function updateUI(){ 
+        document.getElementById('uiMoney').innerText=G.money; document.getElementById('uiDay').innerText=G.day; document.getElementById('uiLv').innerText=G.lv; document.getElementById('trendIcon').innerText=G.trend.i; 
+        document.getElementById('uiQueue').innerText=G.queue;
+        let pct = Math.min(100, (G.xp/100)*100); document.getElementById('uiXp').style.width=pct+'%';
     }
 
-    function renderScene() {
+    function renderScene(){
         const pBox=document.getElementById('potBox'); pBox.innerHTML='';
         G.pots.forEach((p,i)=>{
-            let c=''; if(p.status==='idle')c=p.items.map(k=>ITEMS[k].i).join(''); else if(p.status==='done')c=p.res.i;
-            let d=document.createElement('div'); d.className='stove-slot';
-            d.innerHTML=`
+            let d=document.createElement('div'); d.className='stove-unit';
+            if(p.status==='locked') {
+                d.innerHTML=`<div class="burner"></div><div class="pot-locked" onclick="unlockPot()">🔒<div style="margin-top:2px">Lv.10+<br>$1000</div></div>`;
+            } else {
+                let c=''; if(p.status==='idle')c=p.items.map(k=>ITEMS[k].i).join(''); else if(p.status==='done')c=p.res.i;
+                d.innerHTML=`
                 <div class="burner"></div>
                 <div class="pot ${G.selPot===i?'selected':''} ${p.status} ${c?'has-food':''}" onclick="selPot(${i},event)">
-                    <div class="pot-ear l"></div><div class="pot-ear r"></div>
-                    <div class="steam">♨️</div>
+                    <div class="pot-handle l"></div><div class="pot-handle r"></div>
                     <div class="pot-lid"><div class="lid-knob"></div></div>
                     <div class="pot-body"></div>
                     <div class="pot-icon">${c}</div>
                 </div>`;
+            }
             pBox.appendChild(d);
         });
-        const pAct=document.getElementById('potAct');
-        if(G.selPot!==-1 && ((G.pots[G.selPot].status==='idle' && G.pots[G.selPot].items.length>0) || G.pots[G.selPot].status==='done')) {
-            pAct.classList.add('show');
+        
+        const pAct=document.getElementById('potAct'); 
+        if(G.selPot!==-1 && G.pots[G.selPot].status!=='locked'){
+            let p=G.pots[G.selPot]; 
+            if((p.status==='idle'&&p.items.length>0)||p.status==='done') pAct.classList.add('show'); else pAct.classList.remove('show');
         } else pAct.classList.remove('show');
 
         const sBox=document.getElementById('seatBox'); sBox.innerHTML='';
-        for(let i=0; i<2; i++) {
-            let c=G.seats[i]; let d=document.createElement('div'); d.className='seat';
-            if(c) d.innerHTML=`<div class="cust show" onclick="serve(${i})"><div class="bubble">${c.dish.i}</div><div class="cust-face">${c.face}</div></div>`;
+        const SHIRTS=['#90caf9','#a5d6a7','#ce93d8','#ffcc80'];
+        
+        for(let i=0; i<4; i++){
+            let d=document.createElement('div'); d.className='seat-wrapper';
+            
+            if(i < G.seatsUnlocked) {
+                d.innerHTML = '<div class="stool"></div>';
+                let c = G.seats[i];
+                if(c) {
+                    d.innerHTML += `
+                    <div class="cust show" onclick="serve(${i})">
+                        <div class="timer-track"><div class="timer-fill" id="timer-${i}"></div></div>
+                        <div class="bubble">${c.dish.i}</div>
+                        <div class="cust-body-group">
+                            <div class="cust-head">${c.face}</div>
+                            <div class="cust-torso" style="background:${c.shirt}"><div class="cust-collar"></div></div>
+                        </div>
+                    </div>`;
+                }
+            } else if (i === G.seatsUnlocked) {
+                let cost = i===2 ? 500 : 1000;
+                let reqLv = i===2 ? 10 : 20;
+                d.innerHTML = `<div class="stool-locked" onclick="unlockSeat(${i}, ${cost}, ${reqLv})">🔒<br>Lv${reqLv}<br>$${cost}</div>`;
+            } else {
+                d.innerHTML = ''; 
+            }
             sBox.appendChild(d);
         }
 
-        if(G.isPlaying) {
+        if(G.isPlaying){
             const gNav=document.getElementById('gameNav'); gNav.innerHTML='';
-            for(let k in ITEMS) {
-                let d=document.createElement('div'); d.className='ing-card';
-                d.innerHTML=`<div style="font-size:24px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
+            for(let k in ITEMS){
+                let d=document.createElement('div'); d.className='ing-card'; d.innerHTML=`<div style="font-size:24px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
                 d.onclick=()=>addIng(k); gNav.appendChild(d);
             }
         }
     }
 
-    function selPot(i,e) { e.stopPropagation(); if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i; renderScene();} }
-    function addIng(k) { if(G.inv[k]<=0)return toast('没库存'); if(G.selPot===-1)return toast('请选锅'); let p=G.pots[G.selPot]; if(p.status!=='idle')return toast('锅正忙'); G.inv[k]--; p.items.push(k); renderScene(); }
-    function clearPot() { G.pots[G.selPot]={items:[],status:'idle',res:null}; renderScene(); }
-    function cook() {
-        let p=G.pots[G.selPot]; p.status='cooking'; renderScene();
-        setTimeout(()=>{
-            let m=p.items.sort().join(','); let f=RECIPES.find(r=>r.req.slice().sort().join(',')===m);
-            p.status='done'; p.res=f||{n:'黑暗料理',p:0,i:'🤢'}; renderScene();
-        },1500);
-    }
-    function serve(i) {
-        let p=G.pots[G.selPot]; let c=G.seats[i];
-        if(!p||p.status!=='done')return toast('没好'); if(!c)return;
-        if(c.dish.n===p.res.n) {
-            let facM=FACILITIES[G.facLv-1].mult; let trM=p.res.id===G.trend.id?2:1;
-            let earn=Math.floor(p.res.p*facM*trM);
-            G.money+=earn; G.totalEarned+=earn; G.stats.earn+=earn; G.seats[i]=null; G.pots[G.selPot]={items:[],status:'idle',res:null}; G.selPot=-1;
-            if(G.money>G.lv*600){G.lv++;toast('店铺升级!'); checkAch();}
-            updateUI(); checkAch(); renderScene(); toast(`+$${earn}`);
-        } else toast('不要');
+    function unlockPot() { if(G.lv<10)return toast('需Lv.10'); if(G.money<1000)return toast('需$1000'); if(confirm('解锁?')){G.money-=1000;G.potsUnlocked=2;G.pots[1].status='idle';updateUI();renderScene();saveGame();toast('解锁成功!');} }
+    
+    function unlockSeat(idx, cost, reqLv) {
+        if(G.lv < reqLv) return toast(`需 Lv.${reqLv}`);
+        if(G.money < cost) return toast(`需 $${cost}`);
+        if(confirm(`花费 $${cost} 解锁新座位?`)) {
+            G.money -= cost;
+            G.seatsUnlocked++;
+            updateUI();
+            renderScene();
+            saveGame();
+            toast('座位已扩建! 🪑');
+        }
     }
 
+    function selPot(i,e){e.stopPropagation();if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
+    function addIng(k){if(G.inv[k]<=0)return toast('没库存');if(G.selPot===-1)return toast('请选锅');let p=G.pots[G.selPot];if(p.status!=='idle')return toast('锅忙');G.inv[k]--;p.items.push(k);renderScene();}
+    function clearPot(){G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
+    function cook(){ let p=G.pots[G.selPot]; p.status='cooking'; renderScene(); setTimeout(()=>{ let m=p.items.sort().join(','); let f=RECIPES.find(r=>r.req.slice().sort().join(',')===m); p.status='done'; p.res=f||{n:'黑暗料理',p:0,i:'🤢'}; renderScene(); },2000); }
+    function serve(i){ let p=G.pots[G.selPot]; let c=G.seats[i]; if(!p||p.status!=='done')return toast('没好'); if(!c)return; if(c.dish.n===p.res.n){ G.xp+=5; if(G.xp>=100){G.xp=0;G.lv++;toast(`升级 Lv.${G.lv}!`);} let fM=FACILITIES[G.facLv-1].mult; let tM=p.res.id===G.trend.id?2:1; let earn=Math.floor(p.res.p*fM*tM); if(Math.random()<0.05){let tip=Math.round(earn*0.5);earn+=tip;toast(`💖 小费 +${tip}`);}else{toast(`+$${earn}`);} G.money+=earn; G.totalEarned+=earn; G.stats.earn+=earn; G.seats[i]=null; G.pots[G.selPot]={items:[],status:'idle',res:null}; G.selPot=-1; updateUI(); checkAch(); renderScene(); }else toast('不要'); }
+    function customerLeave(i){ if(!G.seats[i])return; G.money=Math.max(0,G.money-5); G.seats[i]=null; toast('客人走了 -5'); updateUI(); renderScene(); checkDeadlock(); }
+    
     let loopId;
-    function startBusiness() {
-        if(G.menu.length<1)return toast('请至少选1道菜');
-        closeModal(); G.isPlaying=true; G.queue=5+G.lv; G.seats=[null,null]; G.selPot=-1; G.stats={earn:0};
-        G.pots=[]; for(let i=0; i<G.potsUnlocked; i++) G.pots.push({items:[], status:'idle', res:null});
-        document.getElementById('homeNav').style.display='none'; document.getElementById('gameNav').style.display='flex'; document.getElementById('endBtn').style.display='block';
-        renderScene(); spawn(0);
-        if(loopId) clearInterval(loopId); loopId=setInterval(loop,800);
-    }
-    function loop() {
-        if(!G.isPlaying)return;
-        let e=G.seats.indexOf(null); if(e!==-1 && G.queue>0 && Math.random()>0.4){spawn(e); G.queue--;}
-        if(G.queue===0 && !G.seats[0] && !G.seats[1]) setTimeout(endDay,1000);
-    }
-    function spawn(i) {
-        if(G.seats[i])return;
-        let d=G.menu[Math.floor(Math.random()*G.menu.length)];
-        if(G.menu.includes(G.trend) && Math.random()<0.3) d=G.trend;
-        G.seats[i]={dish:d, face:['👱','👵','👨','🧒'][Math.floor(Math.random()*4)]};
-        renderScene();
-    }
-    function endDay() { clearInterval(loopId); G.isPlaying=false; saveGame(); document.getElementById('modalReport').style.display='flex'; document.getElementById('repMoney').innerText=G.stats.earn; }
-    function nextDay() { G.day++; saveGame(); closeModal(); document.getElementById('homeNav').style.display='grid'; document.getElementById('gameNav').style.display='none'; document.getElementById('endBtn').style.display='none'; init(); }
+    let spawnTick = 0;
+    let isEnding = false;
 
-    // 弹窗逻辑
-    function openAchieve() {
-        const el = document.getElementById('achList'); el.innerHTML = '';
-        ACHIEVEMENTS.forEach(a => {
-            const unlocked = G.achieved.includes(a.id);
-            const d = document.createElement('div');
-            d.className = `ach-item ${unlocked ? 'unlocked' : ''}`;
-            d.innerHTML = `<div class="ach-icon">${a.i}</div><div class="ach-info"><h4>${a.n}</h4><p>${a.desc}</p></div><div style="font-size:20px">${unlocked ? '✅' : '🔒'}</div>`;
-            el.appendChild(d);
-        });
-        document.getElementById('modalAchieve').style.display = 'flex';
-    }
+    function startBusiness(){ 
+        if(G.menu.length<1)return toast('请选菜'); 
+        closeModal(); 
+        G.isPlaying=true; 
+        isEnding = false;
+        document.getElementById('homeTitle').classList.add('hidden'); 
+        
+        let base = 6;
+        let bonus = (G.lv - 1) * 3;
+        G.queue = Math.min(50, base + bonus);
 
-    function openMarket() {
-        const el = document.getElementById('marketList'); el.innerHTML = '';
-        Object.keys(ITEMS).forEach(k => {
-            const item = ITEMS[k];
-            const d = document.createElement('div');
-            d.className = 'grid-item';
-            d.innerHTML = `<div style="font-size:24px">${item.i}</div><div>${item.n}</div><div style="color:orange">$${G.prices[k]}</div><div class="stock-tag">当前:${G.inv[k]}</div>`;
-            d.onclick = () => {
-                if(G.money >= G.prices[k]) { G.money -= G.prices[k]; G.inv[k]++; updateUI(); openMarket(); } else { toast('没钱'); }
-            };
-            el.appendChild(d);
-        });
-        document.getElementById('modalMarket').style.display = 'flex';
-    }
+        updateUI(); 
 
-    function openRecipes() {
-        const el = document.getElementById('recipeList'); el.innerHTML = '';
-        RECIPES.forEach(r => {
-            const locked = G.lv < r.lv;
-            const d = document.createElement('div');
-            d.className = 'recipe-row';
-            if(locked) d.style.opacity = '0.5';
-            const reqStr = r.req.map(k => ITEMS[k].i).join('+');
-            d.innerHTML = `<div style="font-size:24px">${locked ? '🔒' : r.i}</div>
-                           <div class="recipe-info"><div style="font-weight:bold">${locked ? '???' : r.n}</div><div style="font-size:12px;color:#888">${locked ? `Lv.${r.lv}解锁` : `配方:${reqStr}`}</div></div>
-                           <div style="font-weight:bold;color:orange">$${r.p}</div>`;
-            el.appendChild(d);
-        });
-        document.getElementById('modalRecipes').style.display = 'flex';
+        G.seats=[null,null,null,null]; 
+        G.selPot=-1; 
+        G.stats={earn:0}; 
+        for(let i=0;i<2;i++) if(i<G.potsUnlocked)G.pots[i]={items:[],status:'idle',res:null}; else G.pots[i].status='locked'; 
+        
+        document.getElementById('homeNav').style.display='none'; 
+        document.getElementById('gameNav').style.display='flex'; 
+        document.getElementById('endBtn').style.display='block'; 
+        
+        renderScene(); 
+        spawnRandom(); 
+        if(loopId)clearInterval(loopId); 
+        loopId=setInterval(loop, 50); 
     }
+    
+    function loop(){ 
+        if(!G.isPlaying)return; 
 
-    function openUpgrade() {
-        const el = document.getElementById('facList'); el.innerHTML = '';
-        FACILITIES.forEach(f => {
-            const d = document.createElement('div');
-            const isCur = G.facLv === f.lv;
-            const isOwned = G.facLv > f.lv;
-            const isLocked = G.lv < f.reqLv;
-            d.className = `fac-item ${isCur ? 'current' : ''}`;
-            let btnHtml = isCur ? '<small style="color:green">当前</small>' : (isOwned ? '<small style="color:#999">已拥有</small>' : (isLocked ? `<small style="color:#999">Lv.${f.reqLv}解锁</small>` : `<button class="up-btn" onclick="buyFac(${f.lv})">升级 $${f.cost}</button>`));
-            d.innerHTML = `<div><b>${f.name}</b><br><small style="color:#888">加成 ${Math.round(f.mult*100)}%</small></div>${btnHtml}`;
-            el.appendChild(d);
-        });
-        document.getElementById('modalUpgrade').style.display = 'flex';
-    }
+        spawnTick++;
+        if(spawnTick % 20 === 0) { 
+            spawnRandom();
+        }
+        
+        let allEmpty = true;
+        G.seats.forEach((s, idx) => {
+            if(s) {
+                allEmpty = false;
+                let passed = Date.now() - s.spawnTime;
+                let pct = 100 - (passed / s.maxTime * 100);
+                
+                let bar = document.getElementById(`timer-${idx}`);
+                if(bar) {
+                    bar.style.width = Math.max(0, pct) + '%';
+                    if(pct < 30) bar.style.background = '#e53935'; 
+                }
 
-    function openMenu() {
-        document.getElementById('menuTitle').innerText = `📝 今日菜单 (${G.menu.length}/5)`;
-        const el = document.getElementById('menuSelection'); el.innerHTML = '';
-        RECIPES.filter(r => r.lv <= G.lv).forEach(r => {
-            const d = document.createElement('div');
-            d.className = `grid-item ${G.menu.includes(r) ? 'sel' : ''}`;
-            d.innerHTML = `<div style="font-size:24px">${r.i}</div><div>${r.n}</div>${r.id===G.trend.id ? '<span style="color:red;font-size:10px">🔥</span>' : ''}`;
-            d.onclick = () => {
-                if(G.menu.includes(r)) G.menu = G.menu.filter(x => x !== r);
-                else { if(G.menu.length >= 5) return toast('最多5道'); G.menu.push(r); }
-                openMenu();
-            };
-            el.appendChild(d);
-        });
-        document.getElementById('modalMenu').style.display = 'flex';
-    }
-
-    function openWarehouse() {
-        const el = document.getElementById('whList'); el.innerHTML = '';
-        Object.keys(ITEMS).forEach(k => {
-            const item = ITEMS[k];
-            const d = document.createElement('div');
-            d.className = 'grid-item';
-            d.innerHTML = `<div style="font-size:24px">${item.i}</div><small>${item.n} x${G.inv[k]}</small>`;
-            el.appendChild(d);
-        });
-        document.getElementById('modalWarehouse').style.display = 'flex';
-    }
-
-    function buyFac(lv) {
-        const f = FACILITIES.find(x => x.lv === lv);
-        if(G.money >= f.cost) { G.money -= f.cost; G.facLv = lv; updateUI(); saveGame(); openUpgrade(); toast('装修成功'); } else toast('钱不够');
-    }
-
-    function checkAch() {
-        let updated = false;
-        ACHIEVEMENTS.forEach(a => {
-            if(!G.achieved.includes(a.id) && a.check(G)) {
-                G.achieved.push(a.id);
-                document.getElementById('achName').innerText = a.n;
-                document.getElementById('achToast').classList.add('show');
-                setTimeout(() => document.getElementById('achToast').classList.remove('show'), 3000);
-                updated = true;
+                if(passed >= s.maxTime) {
+                    customerLeave(idx);
+                }
             }
         });
-        if(updated) saveGame();
+
+        checkDeadlock(); 
+        
+        if(G.queue===0 && allEmpty && !isEnding) {
+            isEnding = true;
+            setTimeout(endDay, 1000); 
+        }
     }
 
-    function closeModal() { document.querySelectorAll('.modal-mask').forEach(e => e.style.display = 'none'); }
-    function toast(m) { let t=document.getElementById('toast'); t.innerText=m; t.style.opacity=1; setTimeout(()=>t.style.opacity=0,1000); }
+    function spawnRandom() {
+        if(G.queue <= 0) return;
+        let available = [];
+        for(let i=0; i<G.seatsUnlocked; i++) {
+            if(!G.seats[i]) available.push(i);
+        }
+        
+        if(available.length > 0 && Math.random() > 0.4) {
+            let seatIdx = available[Math.floor(Math.random() * available.length)];
+            spawn(seatIdx);
+            G.queue--;
+            updateUI(); 
+        }
+    }
+
+    // 核心修复：移除锅状态的检查，只要有库存就不算死局
+    function checkDeadlock() {
+        let active = G.seats.filter(c => c);
+        if (active.length === 0) return;
+
+        let hope = false;
+        for (let c of active) {
+            // 1. 检查锅里有没有能用的（成品或半成品）
+            let inPot = G.pots.some(p => {
+                // 已做好
+                if (p.status === 'done' && p.res && p.res.id === c.dish.id) return true;
+                
+                let pm = p.items.slice().sort().join('');
+                let rm = c.dish.req.slice().sort().join('');
+                // 正在做（完全匹配）
+                return (p.status === 'cooking' || (p.status === 'idle' && p.items.length > 0)) && pm === rm;
+            });
+            if (inPot) { hope = true; break; }
+
+            // 2. 检查库存：只要有食材就算有希望（忽略锅是否被占用，因为可以倒掉）
+            let canMake = c.dish.req.every(k => G.inv[k] > 0);
+            if (canMake) { hope = true; break; }
+
+            // 3. 混合检查：锅里有一半，库存有另一半（仅针对闲置锅）
+            let canComplete = G.pots.some(p => {
+                if (p.status !== 'idle' || p.items.length === 0) return false;
+                let pItems = [...p.items];
+                let reqItems = [...c.dish.req];
+                let match = true;
+                for(let it of pItems){
+                    let idx = reqItems.indexOf(it);
+                    if(idx > -1) reqItems.splice(idx, 1); 
+                    else { match = false; break; } 
+                }
+                if(!match) return false;
+                return reqItems.every(k => G.inv[k] > 0);
+            });
+            if (canComplete) { hope = true; break; }
+        }
+
+        if (!hope) {
+            triggerGameOver(active[0].dish.n);
+        }
+    }
+
+    function triggerGameOver(n){ G.isPlaying=false; clearInterval(loopId); document.getElementById('gameOverMsg').innerText=`无法制作: ${n}`; document.getElementById('modalGameOver').style.display='flex'; }
+    function closeGameOver(){ document.getElementById('modalGameOver').style.display='none'; endDay(); }
+    
+    function spawn(i){ 
+        if(G.seats[i])return; 
+        let d=G.menu[Math.floor(Math.random()*G.menu.length)]; 
+        if(G.menu.includes(G.trend)&&Math.random()<0.3)d=G.trend; 
+        const SHIRTS=['#90caf9','#a5d6a7','#ce93d8','#ffcc80']; 
+        
+        G.seats[i]={
+            dish:d, 
+            face:['👱','👵','👨','🧒'][Math.floor(Math.random()*4)], 
+            shirt:SHIRTS[Math.floor(Math.random()*4)],
+            spawnTime: Date.now(),
+            maxTime: 15000 
+        }; 
+        renderScene(); 
+    }
+
+    function endDay(){ 
+        clearInterval(loopId); 
+        G.isPlaying=false; 
+        G.seats=[null,null,null,null]; 
+        G.pots.forEach(p => { if(p.status !== 'locked') { p.items = []; p.status = 'idle'; p.res = null; } });
+        renderScene(); 
+        saveGame(); 
+        document.getElementById('homeTitle').classList.remove('hidden'); 
+        document.getElementById('modalReport').style.display='flex'; 
+        document.getElementById('repMoney').innerText=G.stats.earn; 
+    }
+
+    function nextDay(){ G.day++; G.menu=[]; let u=RECIPES.filter(r=>r.lv<=G.lv); G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0]; for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); saveGame(); closeModal(); document.getElementById('homeNav').style.display='block'; document.getElementById('gameNav').style.display='none'; document.getElementById('endBtn').style.display='none'; init(); }
+    
+    function checkAndOpenMenu() { try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
+
+    function showCommon(t, h) { document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
+    function openMarket() { showCommon('🥦 菜市场', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item" onclick="buyItem('${k}')"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:orange">$${G.prices[k]}</div><div style="font-size:10px;color:#aaa">拥:${G.inv[k]}</div></div>`).join('')}</div>`); }
+    function buyItem(k) { if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
+    function openWarehouse() { showCommon('📦 仓库', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:#888">x${G.inv[k]}</div></div>`).join('')}</div>`); }
+    
+    function openRecipes() { 
+        showCommon('📖 食谱', `<div style="display:flex;flex-direction:column;gap:10px">${RECIPES.map(r=>{
+            let l=G.lv<r.lv; 
+            return `<div style="display:flex;align-items:center;padding:10px;border:1px solid #eee;border-radius:10px;opacity:${l?0.5:1}"><div style="font-size:24px;margin-right:10px">${l?'🔒':r.i}</div><div><b>${l?'???':r.n}</b> <span style="color:#ff7043;font-weight:bold;margin-left:5px">${l?'':'$'+r.p}</span><br><small style="color:#888">${l?`Lv.${r.lv}`:r.req.map(k=>ITEMS[k].i).join('')}</small></div></div>`
+        }).join('')}</div>`); 
+    }
+    
+    function openAchieve() { showCommon('🏆 成就', `<div style="display:flex;flex-direction:column;gap:10px">${ACHIEVEMENTS.map(a=>{let u=G.achieved.includes(a.id); return `<div style="display:flex;align-items:center;padding:10px;background:${u?'#fff8e1':'#f9f9f9'};border:1px solid ${u?'#ffca28':'#eee'};border-radius:10px"><div style="font-size:24px;margin-right:10px;filter:${u?'none':'grayscale(1)'}">${a.i}</div><div><b>${a.n}</b><br><small>${a.d}</small></div></div>`}).join('')}</div>`); }
+    function openUpgrade() { showCommon('🏗️ 装修', `<div style="display:flex;flex-direction:column;gap:10px">${FACILITIES.map(f=>{let cur=G.facLv===f.lv; return `<div style="display:flex;justify-content:space-between;padding:10px;border:1px solid ${cur?'#81c784':'#eee'};background:${cur?'#e8f5e9':'#fff'};border-radius:10px"><div><b>${f.name}</b><small> (${Math.round(f.mult*100)}%)</small></div>${cur?'<small>当前</small>':(G.facLv>f.lv?'<small>已购</small>':(G.lv<f.reqLv?`<small>Lv.${f.reqLv}</small>`:`<button onclick="buyFac(${f.lv})" style="background:#42a5f5;color:white;border:none;padding:2px 8px;border-radius:10px">升级 $${f.cost}</button>`))}</div>`}).join('')}</div>`); }
+    function buyFac(lv) { let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
+    function openMenu() { 
+        document.getElementById('menuTitle').innerText=`📝 菜单 (${G.menu.length}/5)`; 
+        document.getElementById('menuSelection').innerHTML = RECIPES.filter(r=>r.lv<=G.lv).map(r=>{
+            let sel=G.menu.includes(r);
+            return `<div class="grid-item ${sel?'sel':''}" onclick="togMenu('${r.id}')"><div style="font-size:24px">${r.i}</div><div>${r.n}</div>${r.id===G.trend.id?'🔥':''}</div>`
+        }).join('');
+        document.getElementById('modalMenu').style.display='flex';
+    }
+    window.togMenu = function(id) { 
+        let r=RECIPES.find(x=>x.id===id); 
+        if(G.menu.includes(r))G.menu=G.menu.filter(x=>x!==r); 
+        else{if(G.menu.length>=5)return toast('限5道'); G.menu.push(r);} 
+        openMenu(); 
+    }
+    
+    function closeModal(){document.querySelectorAll('.modal-mask').forEach(e=>e.style.display='none');}
+    function toast(m){let t=document.getElementById('toast');t.innerText=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1000);}
+    
+    function checkAch(){ 
+        ACHIEVEMENTS.forEach(a=>{
+            if(!G.achieved.includes(a.id)&&a.c(G)){
+                G.achieved.push(a.id);
+                G.money += 100; 
+                updateUI();
+                toast(`🏆 ${a.n} (金币+100)`);
+            }
+        }); 
+        saveGame(); 
+    }
 
     init();
 </script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - 终极音效修复版</title>
+    <title>💖 爱的厨房 - Web Audio API 版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -317,30 +317,18 @@
 </head>
 <body>
 
-<!-- 音频资源 -->
-<div style="display:none;">
-    <audio id="bgm" loop src="music/ztq.mp3" preload="auto" playsinline></audio>
-    <audio id="sfx-button" src="sound/button.mp3" preload="auto" playsinline></audio>
-    <audio id="sfx-pot" src="sound/pot.mp3" preload="auto" playsinline></audio>
-    <audio id="sfx-cook" src="sound/cooking.mp3" preload="auto" playsinline></audio>
-    <audio id="sfx-cash" src="sound/cash.mp3" preload="auto" playsinline></audio>
-    <audio id="sfx-win" src="sound/cash.mp3" preload="auto" playsinline></audio>
-</div>
+<!-- 移除所有 audio 标签，纯 JS 实现 -->
 
-<!-- 强制启动页：绑定了 ontouchstart 和 onclick 双重事件，确保移动端捕捉 -->
 <div id="start-screen" 
     style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff3e0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;"
-    ontouchstart="AudioCtrl.unlock()"
-    onclick="AudioCtrl.unlock(); startGame();"
 >
     <div style="font-size:60px;margin-bottom:20px;">💖</div>
     <h2 style="color:#ff7043;margin-bottom:30px;font-size:32px;text-shadow:2px 2px white;">爱的厨房</h2>
-    <!-- 按钮仅作为视觉引导，实际点击事件挂载在全屏遮罩上 -->
-    <button style="background:#ff7043;color:white;border:none;padding:15px 50px;font-size:22px;border-radius:30px;box-shadow:0 8px 20px rgba(255,112,67,0.4);font-weight:bold;cursor:pointer;transition:0.2s; pointer-events:none;">
+    <button onclick="startGame()" style="background:#ff7043;color:white;border:none;padding:15px 50px;font-size:22px;border-radius:30px;box-shadow:0 8px 20px rgba(255,112,67,0.4);font-weight:bold;cursor:pointer;transition:0.2s;">
         点我开始经营
     </button>
-    <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( 点击任意处开始 )</p>
-    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V44 终极音效修复版</p>
+    <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( Web Audio API 强力驱动 )</p>
+    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V45 终极音效版</p>
 </div>
 
 <div class="app">
@@ -362,7 +350,7 @@
 
         <div class="wall">
             <div class="window"><div class="cloud">☁️</div></div>
-            <div class="board" onclick="toast('必吃榜：收益翻倍！');AudioCtrl.play('sfx-button')">
+            <div class="board" onclick="toast('必吃榜：收益翻倍！');AudioSys.play('button')">
                 <div style="font-size:10px;color:#ffcc80">TODAY</div>
                 <div style="font-size:30px" id="trendIcon">?</div>
                 <div style="font-size:10px;background:#e53935;padding:0 5px;border-radius:4px;color:white">HOT</div>
@@ -390,7 +378,7 @@
                 <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
                 <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
                 <div class="menu-btn" onclick="showTutorial(true)"><span class="btn-icon">📢</span><span class="btn-txt">公告</span></div>
-                <div class="menu-btn" onclick="AudioCtrl.toggle()" id="btnSound"><span class="btn-icon">🔊</span><span class="btn-txt">声音</span></div>
+                <div class="menu-btn" onclick="AudioSys.toggle()" id="btnSound"><span class="btn-icon">🔊</span><span class="btn-txt">声音</span></div>
                 <div class="menu-btn" style="background:#e8f5e9; border-color:#c8e6c9;" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt" style="color:#2e7d32">保存</span></div>
             </div>
             
@@ -412,7 +400,6 @@
     </div>
 </div>
 
-<!-- 新手引导弹窗 -->
 <div id="modalTutorial" class="modal-mask" style="z-index: 999;">
     <div class="modal">
         <div class="modal-head" style="justify-content:center; border-bottom:none; padding-bottom:0;">
@@ -432,7 +419,6 @@
     </div>
 </div>
 
-<!-- 弹窗 -->
 <div id="modalMenu" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="menuTitle">📝 今日菜单</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><div class="list-grid" id="menuSelection"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="startBusiness()">🚀 开店</button></div></div></div>
 <div id="modalCommon" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="commTitle"></h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="commBody"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
 <div id="modalReport" class="modal-mask"><div class="modal"><div class="modal-body" style="text-align:center"><div style="font-size:50px">💰</div><h2>营收</h2><h1 style="color:green">+<span id="repMoney">0</span></h1><div id="repPenalty" style="color:#e53935;font-size:12px;margin-top:5px"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="nextDay()">💤 休息</button></div></div></div>
@@ -500,86 +486,127 @@
     let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
     // ==========================================
-    // 终极音频控制器 AudioController V4
+    // Web Audio API 系统 (移动端终极解决方案)
     // ==========================================
-    const AudioCtrl = {
-        muted: false,
-        unlocked: false,
-        ids: ['bgm', 'sfx-button', 'sfx-pot', 'sfx-cook', 'sfx-cash', 'sfx-win'],
-        
-        // 核心解锁逻辑：必须在点击事件中同步调用
-        unlock: function() {
-            if (this.unlocked) return;
-            
-            this.ids.forEach(id => {
-                let el = document.getElementById(id);
-                if (el) {
-                    // 强制加载
-                    el.load();
-                    // 核心技巧：设置非零音量，播放后立即暂停，骗过 iOS 策略
-                    el.volume = 0.01;
-                    let p = el.play();
-                    if (p !== undefined) {
-                        p.then(() => {
-                            el.pause();
-                            el.currentTime = 0;
-                            // 恢复正常音量
-                            if (id === 'bgm') {
-                                el.volume = 0.5;
-                                if (!this.muted) el.play(); // 立即启动BGM
-                            } else {
-                                el.volume = 1.0;
-                            }
-                        }).catch(e => {
-                            console.log("Audio unlock failed for " + id, e);
-                        });
-                    }
-                }
-            });
-            this.unlocked = true;
+    const AudioSys = {
+        ctx: null,
+        masterGain: null,
+        bgmNode: null,
+        buffers: {},
+        isMuted: false,
+        files: {
+            'bgm': 'music/ztq.mp3',
+            'button': 'sound/button.mp3',
+            'pot': 'sound/pot.mp3',
+            'cook': 'sound/cooking.mp3',
+            'cash': 'sound/cash.mp3',
+            'win': 'sound/cash.mp3'
         },
 
-        play: function(id) {
-            if (this.muted) return;
-            let el = document.getElementById(id);
-            if (el) {
-                // 简单的复用逻辑
-                el.currentTime = 0;
-                let p = el.play();
-                if(p !== undefined) p.catch(e=>{});
+        init: function() {
+            try {
+                // 1. 创建音频上下文
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                
+                // 2. 创建主音量控制
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.connect(this.ctx.destination);
+                
+                // 3. 加载所有音频文件到内存
+                for (let key in this.files) {
+                    this.loadSound(key, this.files[key]);
+                }
+            } catch (e) {
+                console.error("Web Audio API not supported", e);
             }
         },
 
-        toggle: function() {
-            this.muted = !this.muted;
-            let btn = document.querySelector('#btnSound .btn-icon');
-            let bgm = document.getElementById('bgm');
+        loadSound: async function(key, url) {
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+                this.buffers[key] = audioBuffer;
+            } catch (e) {
+                console.warn("Failed to load sound:", url);
+            }
+        },
+
+        // 在用户首次点击时调用，解锁 iOS 音频
+        tryUnlock: function() {
+            if (!this.ctx) return;
+            // 如果上下文处于挂起状态，恢复它
+            if (this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+            // 播放一个无声的振荡器，彻底激活
+            const buffer = this.ctx.createBuffer(1, 1, 22050);
+            const source = this.ctx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(this.ctx.destination);
+            source.start(0);
+
+            // 启动BGM（如果没静音）
+            if (!this.bgmNode && !this.isMuted) {
+                this.playBGM();
+            }
+        },
+
+        play: function(key) {
+            if (this.isMuted || !this.ctx || !this.buffers[key]) return;
             
-            if (this.muted) {
+            const source = this.ctx.createBufferSource();
+            source.buffer = this.buffers[key];
+            source.connect(this.masterGain);
+            source.start(0);
+        },
+
+        playBGM: function() {
+            if (this.bgmNode) {
+                try { this.bgmNode.stop(); } catch(e){}
+                this.bgmNode = null;
+            }
+            if (!this.buffers['bgm']) return;
+
+            this.bgmNode = this.ctx.createBufferSource();
+            this.bgmNode.buffer = this.buffers['bgm'];
+            this.bgmNode.loop = true;
+            
+            // BGM 专用音量，稍微小一点
+            const bgmGain = this.ctx.createGain();
+            bgmGain.gain.value = 0.5;
+            
+            this.bgmNode.connect(bgmGain);
+            bgmGain.connect(this.masterGain);
+            this.bgmNode.start(0);
+        },
+
+        toggle: function() {
+            this.isMuted = !this.isMuted;
+            let btn = document.querySelector('#btnSound .btn-icon');
+            
+            if (this.isMuted) {
                 btn.innerText = '🔇';
-                if(bgm) bgm.pause();
+                if (this.masterGain) this.masterGain.gain.value = 0; // 全局静音
                 toast('声音已关闭 🔇');
             } else {
                 btn.innerText = '🔊';
-                // 如果未解锁，尝试解锁(虽然通常需要点击)
-                if(!this.unlocked) this.unlock();
-                if(bgm) {
-                    bgm.volume = 0.5;
-                    bgm.play().catch(e=>{});
-                }
+                // 确保解锁
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.masterGain) this.masterGain.gain.value = 1; // 恢复音量
+                if (!this.bgmNode) this.playBGM(); // 如果BGM没在播，播之
                 toast('声音已开启 🔊');
             }
         }
     };
 
+    // 页面加载时初始化 (只加载文件，不播放)
+    AudioSys.init();
+
     function startGame() {
-        // 音频解锁逻辑已通过 onclick="AudioCtrl.unlock()" 触发
-        // 这里做双重保险：确保 BGM 在非静音状态下开始
-        let bgm = document.getElementById('bgm');
-        if(bgm && !AudioCtrl.muted) {
-            bgm.volume = 0.5;
-            bgm.play().catch(e=>{});
-        }
+        // 关键：在用户交互（点击）时解锁音频上下文
+        AudioSys.tryUnlock();
 
         document.getElementById('start-screen').style.display = 'none';
         
@@ -609,7 +636,7 @@
         } 
     }
     function saveGame(){ localStorage.setItem('HK_V34_Exp',JSON.stringify(G)); }
-    function manualSave(){ saveGame(); toast('✅ 存档成功'); AudioCtrl.play('sfx-button'); }
+    function manualSave(){ saveGame(); toast('✅ 存档成功'); AudioSys.play('button'); }
     function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V34_Exp');localStorage.removeItem('HK_Tutorial_Shown_V2');location.reload();} }
 
     function init(){ 
@@ -638,7 +665,7 @@
     }
 
     window.showTutorial = function(isManual = false) {
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         let title = isManual ? "📢 玩法公告" : "💖 欢迎店长大人！";
         let intro = isManual ? "温故而知新，来看看怎么经营吧~" : "终于等到你啦~ 这里是属于你的<b>「爱的厨房」</b>！<br>这是给你的 <b>200金币</b> 启动资金，快去大胆尝试吧！";
         let content = `
@@ -667,7 +694,7 @@
         let btn = document.getElementById('tutBtn');
         if(isManual) {
             btn.innerText = "我学会啦！关闭";
-            btn.onclick = () => { AudioCtrl.play('sfx-button'); document.getElementById('modalTutorial').style.display = 'none'; };
+            btn.onclick = () => { AudioSys.play('button'); document.getElementById('modalTutorial').style.display = 'none'; };
         } else {
             btn.innerText = "收下资金，开始经营！💪";
             btn.onclick = closeTutorial;
@@ -676,7 +703,7 @@
     }
 
     window.closeTutorial = function() {
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         document.getElementById('modalTutorial').style.display = 'none';
         localStorage.setItem('HK_Tutorial_Shown_V2', 'true');
         if(G.day === 1 && G.totalEarned === 0) {
@@ -772,10 +799,10 @@
         }
     }
 
-    function unlockPot() { AudioCtrl.play('sfx-button'); if(G.lv<10)return toast('需Lv.10'); if(G.money<1000)return toast('需$1000'); if(confirm('解锁?')){G.money-=1000;G.potsUnlocked=2;G.pots[1].status='idle';updateUI();renderScene();saveGame();toast('解锁成功!');} }
+    function unlockPot() { AudioSys.play('button'); if(G.lv<10)return toast('需Lv.10'); if(G.money<1000)return toast('需$1000'); if(confirm('解锁?')){G.money-=1000;G.potsUnlocked=2;G.pots[1].status='idle';updateUI();renderScene();saveGame();toast('解锁成功!');} }
     
     function unlockSeat(idx, cost, reqLv) {
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         if(G.lv < reqLv) return toast(`需 Lv.${reqLv}`);
         if(G.money < cost) return toast(`需 $${cost}`);
         if(confirm(`花费 $${cost} 解锁新座位?`)) {
@@ -788,9 +815,9 @@
         }
     }
 
-    function selPot(i,e){e.stopPropagation();AudioCtrl.play('sfx-pot');if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
+    function selPot(i,e){e.stopPropagation();AudioSys.play('pot');if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
     function addIng(k){
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         if(G.inv[k]<=0)return toast('没库存');
         if(G.selPot===-1){
             document.querySelectorAll('.pot-hint').forEach(el => {
@@ -803,20 +830,15 @@
         if(p.status!=='idle')return toast('锅忙');
         G.inv[k]--;p.items.push(k);renderScene();
     }
-    function clearPot(){AudioCtrl.play('sfx-button');G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
+    function clearPot(){AudioSys.play('button');G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
     function cook(){ 
-        // 烹饪音效特殊处理：1.5s后停止
-        if(!AudioCtrl.muted) {
-            let audio = document.getElementById('sfx-cook');
-            if(audio) {
-                audio.currentTime = 0;
-                audio.volume = 1.0;
-                audio.play().catch(e => {});
-                setTimeout(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }, 1500);
-            }
+        // 烹饪音效: Web Audio 方式, 1.5秒后自动停止
+        if(!AudioSys.isMuted && AudioSys.ctx && AudioSys.buffers['cook']) {
+            const source = AudioSys.ctx.createBufferSource();
+            source.buffer = AudioSys.buffers['cook'];
+            source.connect(AudioSys.masterGain);
+            source.start(0);
+            source.stop(AudioSys.ctx.currentTime + 1.5); // 1.5秒后停止
         }
 
         let p=G.pots[G.selPot]; 
@@ -844,7 +866,7 @@
         
         if(c.type === 'alien') {
             if(p.res.n === '黑暗料理') {
-                AudioCtrl.play('sfx-cash');
+                AudioSys.play('cash');
                 G.money += 100;
                 G.totalEarned += 100;
                 G.stats.earn += 100;
@@ -857,7 +879,7 @@
         }
 
         if(c.dish.n===p.res.n){ 
-            AudioCtrl.play('sfx-cash');
+            AudioSys.play('cash');
             if(G.lv < 50) {
                 let xpGain = 0.5;
                 if(G.lv < 10) xpGain = 5;
@@ -926,7 +948,7 @@
     let isEnding = false;
 
     function startBusiness(){ 
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         let minDishes = G.lv >= 20 ? 5 : 3;
         if(G.menu.length < minDishes) return toast(`至少选择 ${minDishes} 道菜`);
 
@@ -1142,9 +1164,9 @@
         init(); 
     }
     
-    function checkAndOpenMenu() { AudioCtrl.play('sfx-button'); try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
+    function checkAndOpenMenu() { AudioSys.play('button'); try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
 
-    function showCommon(t, h) { AudioCtrl.play('sfx-button'); document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
+    function showCommon(t, h) { AudioSys.play('button'); document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
     function openMarket() { 
         let header = `<p style="text-align:center;color:#795548;font-size:14px;margin-bottom:10px;font-weight:bold">今日价格如下，欢迎采购哦！</p>`;
         let grid = `<div class="list-grid">${Object.keys(ITEMS).map(k=>{
@@ -1162,7 +1184,7 @@
         }).join('')}</div>`;
         showCommon('🥦 菜市场 (每日浮动)', header + grid); 
     }
-    function buyItem(k) { AudioCtrl.play('sfx-cash'); if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
+    function buyItem(k) { AudioSys.play('cash'); if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
     function openWarehouse() { showCommon('📦 仓库', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:#888">x${G.inv[k]}</div></div>`).join('')}</div>`); }
     
     function openRecipes() { 
@@ -1174,7 +1196,7 @@
     
     function openAchieve() { showCommon('🏆 成就', `<div style="display:flex;flex-direction:column;gap:10px">${ACHIEVEMENTS.map(a=>{let u=G.achieved.includes(a.id); return `<div style="display:flex;align-items:center;padding:10px;background:${u?'#fff8e1':'#f9f9f9'};border:1px solid ${u?'#ffca28':'#eee'};border-radius:10px"><div style="font-size:24px;margin-right:10px;filter:${u?'none':'grayscale(1)'}">${a.i}</div><div><b>${a.n}</b><br><small>${a.d}</small></div></div>`}).join('')}</div>`); }
     function openUpgrade() { showCommon('🏗️ 装修', `<div style="display:flex;flex-direction:column;gap:10px">${FACILITIES.map(f=>{let cur=G.facLv===f.lv; return `<div style="display:flex;justify-content:space-between;padding:10px;border:1px solid ${cur?'#81c784':'#eee'};background:${cur?'#e8f5e9':'#fff'};border-radius:10px"><div><b>${f.name}</b><small> (${Math.round(f.mult*100)}%)</small></div>${cur?'<small>当前</small>':(G.facLv>f.lv?'<small>已购</small>':(G.lv<f.reqLv?`<small>Lv.${f.reqLv}</small>`:`<button onclick="buyFac(${f.lv})" style="background:#42a5f5;color:white;border:none;padding:2px 8px;border-radius:10px">升级 $${f.cost}</button>`))}</div>`}).join('')}</div>`); }
-    function buyFac(lv) { AudioCtrl.play('sfx-cash'); let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
+    function buyFac(lv) { AudioSys.play('cash'); let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
     function openMenu() { 
         document.getElementById('menuTitle').innerText=`📝 菜单 (${G.menu.length}/8)`; 
         document.getElementById('menuSelection').innerHTML = RECIPES.filter(r=>r.lv<=G.lv).map(r=>{
@@ -1184,7 +1206,7 @@
         document.getElementById('modalMenu').style.display='flex';
     }
     window.togMenu = function(id) { 
-        AudioCtrl.play('sfx-button');
+        AudioSys.play('button');
         let r=RECIPES.find(x=>x.id===id); 
         if(G.menu.includes(r))G.menu=G.menu.filter(x=>x!==r); 
         else{
@@ -1194,14 +1216,14 @@
         openMenu(); 
     }
     
-    function closeModal(){AudioCtrl.play('sfx-button');document.querySelectorAll('.modal-mask').forEach(e=>e.style.display='none');}
+    function closeModal(){AudioSys.play('button');document.querySelectorAll('.modal-mask').forEach(e=>e.style.display='none');}
     function toast(m){let t=document.getElementById('toast');t.innerText=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1000);}
     
     function checkAch(){ 
         ACHIEVEMENTS.forEach(a=>{
             if(!G.achieved.includes(a.id)&&a.c(G)){
                 G.achieved.push(a.id);
-                AudioCtrl.play('sfx-win');
+                AudioSys.play('win');
                 G.money += 100; 
                 updateUI();
                 toast(`🏆 ${a.n} (金币+100)`);

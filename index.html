@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - Web Audio API 版</title>
+    <title>💖 爱的厨房 - BGM完美修复版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -317,8 +317,6 @@
 </head>
 <body>
 
-<!-- 移除所有 audio 标签，纯 JS 实现 -->
-
 <div id="start-screen" 
     style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff3e0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;"
 >
@@ -327,8 +325,8 @@
     <button onclick="startGame()" style="background:#ff7043;color:white;border:none;padding:15px 50px;font-size:22px;border-radius:30px;box-shadow:0 8px 20px rgba(255,112,67,0.4);font-weight:bold;cursor:pointer;transition:0.2s;">
         点我开始经营
     </button>
-    <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( Web Audio API 强力驱动 )</p>
-    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V45 终极音效版</p>
+    <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( 点击任意处开始 )</p>
+    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V46 BGM修复版</p>
 </div>
 
 <div class="app">
@@ -486,7 +484,7 @@
     let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
     // ==========================================
-    // Web Audio API 系统 (移动端终极解决方案)
+    // Web Audio API 系统 (BGM 异步加载修复版)
     // ==========================================
     const AudioSys = {
         ctx: null,
@@ -494,6 +492,8 @@
         bgmNode: null,
         buffers: {},
         isMuted: false,
+        pendingBGM: false, // 标记：是否正在等待BGM下载好就立即播放
+        
         files: {
             'bgm': 'music/ztq.mp3',
             'button': 'sound/button.mp3',
@@ -505,20 +505,17 @@
 
         init: function() {
             try {
-                // 1. 创建音频上下文
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContext();
-                
-                // 2. 创建主音量控制
                 this.masterGain = this.ctx.createGain();
                 this.masterGain.connect(this.ctx.destination);
                 
-                // 3. 加载所有音频文件到内存
+                // 加载所有音频
                 for (let key in this.files) {
                     this.loadSound(key, this.files[key]);
                 }
             } catch (e) {
-                console.error("Web Audio API not supported", e);
+                console.error("Web Audio API Error", e);
             }
         },
 
@@ -528,26 +525,32 @@
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
                 this.buffers[key] = audioBuffer;
+
+                // 核心修复逻辑：
+                // 如果这个文件是BGM，而且之前我们尝试播放时因为还没下好而挂起了(pendingBGM=true)
+                // 那么现在下载解码好了，立即播放它！
+                if (key === 'bgm' && this.pendingBGM && !this.isMuted) {
+                    console.log("BGM loaded delayed, playing now.");
+                    this.playBGM();
+                }
             } catch (e) {
                 console.warn("Failed to load sound:", url);
             }
         },
 
-        // 在用户首次点击时调用，解锁 iOS 音频
         tryUnlock: function() {
             if (!this.ctx) return;
-            // 如果上下文处于挂起状态，恢复它
             if (this.ctx.state === 'suspended') {
                 this.ctx.resume();
             }
-            // 播放一个无声的振荡器，彻底激活
+            // 播放无声振荡器激活音频引擎
             const buffer = this.ctx.createBuffer(1, 1, 22050);
             const source = this.ctx.createBufferSource();
             source.buffer = buffer;
             source.connect(this.ctx.destination);
             source.start(0);
 
-            // 启动BGM（如果没静音）
+            // 尝试播放BGM
             if (!this.bgmNode && !this.isMuted) {
                 this.playBGM();
             }
@@ -563,23 +566,31 @@
         },
 
         playBGM: function() {
+            // 先清理旧的
             if (this.bgmNode) {
                 try { this.bgmNode.stop(); } catch(e){}
                 this.bgmNode = null;
             }
-            if (!this.buffers['bgm']) return;
 
+            // 检查buffer是否已就绪
+            if (!this.buffers['bgm']) {
+                // 没就绪，标记一下“我想要播放”，等会loadSound好了会自动播放
+                this.pendingBGM = true;
+                return;
+            }
+
+            // 就绪了，播放
             this.bgmNode = this.ctx.createBufferSource();
             this.bgmNode.buffer = this.buffers['bgm'];
             this.bgmNode.loop = true;
             
-            // BGM 专用音量，稍微小一点
             const bgmGain = this.ctx.createGain();
             bgmGain.gain.value = 0.5;
             
             this.bgmNode.connect(bgmGain);
             bgmGain.connect(this.masterGain);
             this.bgmNode.start(0);
+            this.pendingBGM = false; // 重置标记
         },
 
         toggle: function() {
@@ -588,24 +599,25 @@
             
             if (this.isMuted) {
                 btn.innerText = '🔇';
-                if (this.masterGain) this.masterGain.gain.value = 0; // 全局静音
+                if (this.masterGain) this.masterGain.gain.value = 0;
+                this.pendingBGM = false; // 静音了就不再等待BGM了
                 toast('声音已关闭 🔇');
             } else {
                 btn.innerText = '🔊';
-                // 确保解锁
                 if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-                if (this.masterGain) this.masterGain.gain.value = 1; // 恢复音量
-                if (!this.bgmNode) this.playBGM(); // 如果BGM没在播，播之
+                if (this.masterGain) this.masterGain.gain.value = 1;
+                
+                // 开启声音时，如果BGM没播，尝试播放
+                if (!this.bgmNode) this.playBGM();
                 toast('声音已开启 🔊');
             }
         }
     };
 
-    // 页面加载时初始化 (只加载文件，不播放)
     AudioSys.init();
 
     function startGame() {
-        // 关键：在用户交互（点击）时解锁音频上下文
+        // 用户交互瞬间解锁
         AudioSys.tryUnlock();
 
         document.getElementById('start-screen').style.display = 'none';

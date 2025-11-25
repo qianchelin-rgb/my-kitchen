@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - 4.2</title>
+    <title>💖 爱的厨房 - V42 移动端音效修复版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -321,14 +321,16 @@
 </head>
 <body>
 
-<!-- 音频资源 -->
-<audio id="bgm" loop src="music/ztq.mp3" preload="auto"></audio>
-<audio id="sfx-button" src="sound/button.mp3" preload="auto"></audio>
-<audio id="sfx-pot" src="sound/pot.mp3" preload="auto"></audio>
-<audio id="sfx-cook" src="sound/cooking.mp3" preload="auto"></audio>
-<audio id="sfx-cash" src="sound/cash.mp3" preload="auto"></audio>
+<!-- 音频资源：关键修改：增加 preload, playsinline 确保手机端加载 -->
+<div style="display:none;">
+    <audio id="bgm" loop src="music/ztq.mp3" preload="auto" playsinline></audio>
+    <audio id="sfx-button" src="sound/button.mp3" preload="auto" playsinline></audio>
+    <audio id="sfx-pot" src="sound/pot.mp3" preload="auto" playsinline></audio>
+    <audio id="sfx-cook" src="sound/cooking.mp3" preload="auto" playsinline></audio>
+    <audio id="sfx-cash" src="sound/cash.mp3" preload="auto" playsinline></audio>
+</div>
 
-<!-- 强制启动页 -->
+<!-- 强制启动页：需要用户点击才能触发移动端音频 -->
 <div id="start-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff3e0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;">
     <div style="font-size:60px;margin-bottom:20px;">💖</div>
     <h2 style="color:#ff7043;margin-bottom:30px;font-size:32px;text-shadow:2px 2px white;">爱的厨房</h2>
@@ -336,7 +338,7 @@
         点我开始经营
     </button>
     <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( 点击以启用音效 )</p>
-    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V42 布局优化版</p>
+    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V42 移动端音效修复版</p>
 </div>
 
 <div class="app">
@@ -497,8 +499,8 @@
 
     let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
-    let audioUnlocked = false;
-    let isMuted = true;
+    // --- 音频管理系统 (针对移动端优化) ---
+    let isMuted = false;
 
     function toggleSound() {
         isMuted = !isMuted;
@@ -507,9 +509,10 @@
         
         if(!isMuted) {
             btn.innerText = '🔊';
-            if(bgm) {
+            // 尝试恢复背景音乐
+            if(bgm && bgm.paused) {
                 bgm.volume = 0.5;
-                bgm.play().catch(e => console.log("BGM auto-play blocked, waiting for interaction"));
+                bgm.play().catch(e => console.log("BGM resume blocked"));
             }
             toast('声音已开启 🔊');
         } else {
@@ -523,43 +526,65 @@
         if(isMuted) return;
         let audio = document.getElementById(id);
         if(audio) {
+            // 移动端简单处理：重置时间并播放
+            // 如果上一个声音还没播完，重置会切断上一个，但这在H5小游戏中是可以接受的
             audio.currentTime = 0;
-            audio.play().catch(e => {});
+            // 增加 catch 以防止 "Uncaught (in promise) DOMException" 报错
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // 移动端常见：如果交互不够，这里会报错，忽略即可
+                    console.log("Audio play suppressed:", error);
+                });
+            }
         }
     }
 
-    function startGame() {
-        document.getElementById('start-screen').style.display = 'none';
-        
-        // 强制激活音频
+    // 移动端音频“解锁”函数
+    function initMobileAudio() {
         const audioIds = ['bgm', 'sfx-button', 'sfx-pot', 'sfx-cook', 'sfx-cash'];
         audioIds.forEach(id => {
             let el = document.getElementById(id);
             if(el) {
-                el.muted = true;
-                el.play().then(() => {
-                    el.pause();
-                    el.currentTime = 0;
-                    el.muted = false;
-                }).catch(e => console.log("Audio warm-up skipped"));
+                el.muted = true; // 先静音
+                let p = el.play(); // 尝试播放
+                if(p !== undefined) {
+                    p.then(() => {
+                        el.pause(); // 立即暂停
+                        el.currentTime = 0; // 重置进度
+                        el.muted = false; // 取消静音
+                    }).catch(e => {
+                        console.log("Mobile audio unlock failed for " + id);
+                    });
+                }
             }
         });
-
-        // BGM处理：默认开启，但受到 toggleSound 控制
-        isMuted = false; 
-        document.querySelector('#btnSound .btn-icon').innerText = '🔊';
+        
+        // 单独启动背景音乐
         let bgm = document.getElementById('bgm');
         if(bgm) {
             bgm.volume = 0.5;
-            bgm.play().catch(e => console.log("BGM blocked"));
+            bgm.play().catch(e => console.log("BGM start blocked"));
         }
+        
+        // 更新图标状态
+        document.querySelector('#btnSound .btn-icon').innerText = '🔊';
+        isMuted = false;
+    }
 
+    function startGame() {
+        // 关键点：在用户点击事件中同步调用音频初始化
+        initMobileAudio();
+        
+        document.getElementById('start-screen').style.display = 'none';
+        
         resizeGame();
         init();
         if(!localStorage.getItem('HK_Tutorial_Shown_V2')) {
             showTutorial(false);
         }
     }
+    // --- 音频管理结束 ---
 
     function loadGame(){ 
         const s=localStorage.getItem('HK_V34_Exp'); 

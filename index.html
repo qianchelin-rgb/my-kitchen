@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - 最终完美版</title>
+    <title>💖 爱的厨房 - M4A 终极版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -320,41 +320,36 @@
 </head>
 <body>
 
+<!-- 更新：这里的音频地址已经改为了 bgm.m4a -->
+<audio id="bgm-music" src="music/bgm.m4a?v=888" loop preload="auto" playsinline webkit-playsinline></audio>
+
 <div id="start-screen" 
     style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff3e0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;"
 >
     <div style="font-size:60px;margin-bottom:20px;">💖</div>
     <h2 style="color:#ff7043;margin-bottom:10px;font-size:32px;text-shadow:2px 2px white;">爱的厨房</h2>
-    <p style="color:#8d6e63;margin-bottom:30px;font-size:14px;">( 加载诊断模式 )</p>
+    <p style="color:#8d6e63;margin-bottom:30px;font-size:14px;">( M4A 混合引擎版 )</p>
 
-    <!-- 选择区域 -->
     <div id="start-choices" style="display:flex; flex-direction:column; gap:15px; width:80%; max-width:300px;">
         <button onclick="preloadAssets()" style="background:#ff7043;color:white;border:none;padding:15px;font-size:18px;border-radius:30px;box-shadow:0 5px 15px rgba(255,112,67,0.3);font-weight:bold;cursor:pointer;">
-            🔊 下载完整音效
+            🔊 下载音效 (推荐)
         </button>
         <button onclick="skipAssets()" style="background:#d7ccc8;color:#5d4037;border:none;padding:15px;font-size:16px;border-radius:30px;font-weight:bold;cursor:pointer;">
             🔇 静音直接进入
         </button>
     </div>
 
-    <!-- 进度条区域 -->
     <div id="loading-area" style="display:none; width:100%; flex-direction:column; align-items:center;">
-        <p style="color:#ff7043; font-weight:bold;">正在下载... (卡住请点跳过)</p>
+        <p style="color:#ff7043; font-weight:bold;">正在准备音效...</p>
         <div class="loading-bar-box" style="display:block;"><div class="loading-fill" id="loadBar"></div></div>
         <p id="loadText" style="font-size:12px; color:#888;">0%</p>
-        
-        <div style="margin-top:20px;">
-             <span onclick="skipAssets()" style="font-size:12px; color:#999; text-decoration:underline; cursor:pointer;">
-                一直卡住？点我强制进入(无声)
-             </span>
-        </div>
     </div>
 
-    <!-- 最终进入按钮 -->
     <div id="final-start-btn" style="display:none; margin-top:20px;">
         <button onclick="enterGameWithSound()" style="background:#66bb6a;color:white;border:none;padding:15px 60px;font-size:22px;border-radius:30px;box-shadow:0 8px 20px rgba(102,187,106,0.4);font-weight:bold;cursor:pointer;animation:pop 0.5s infinite alternate;">
             🚀 开始营业！
         </button>
+        <p style="font-size:12px; color:#aaa; margin-top:10px;">(请确保手机没开静音模式)</p>
     </div>
 </div>
 
@@ -513,20 +508,17 @@
     let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
     // ==========================================
-    // 资源预加载与音频系统
+    // 混合音频系统 (BGM用Audio Tag, SFX用Web Audio)
     // ==========================================
     const AudioSys = {
         ctx: null,
         masterGain: null,
-        bgmNode: null,
         buffers: {},
         isMuted: false,
         disabled: false, 
         
-        files: {
-            // 确保文件名是 bgm.mp3，且是清洗过无封面的版本
-            // 加上 v=5 强制手机重新下载，不读缓存
-            'bgm': 'music/bgm.mp3?v=5', 
+        // 仅音效需要加载
+        sfxFiles: {
             'button': 'sound/button.mp3',
             'pot': 'sound/pot.mp3',
             'cook': 'sound/cooking.mp3',
@@ -546,48 +538,53 @@
             }
         },
 
-        // 加载所有资源，带错误诊断
+        // 加载所有音效
         loadAll: async function(onProgress) {
             if (this.disabled) return;
             if (!this.ctx) this.initContext();
 
-            const keys = Object.keys(this.files);
+            const keys = Object.keys(this.sfxFiles);
             let loaded = 0;
 
             for (let key of keys) {
-                let url = this.files[key];
+                let url = this.sfxFiles[key];
                 try {
                     const response = await fetch(url);
-                    if (!response.ok) throw new Error("HTTP " + response.status);
                     const arrayBuffer = await response.arrayBuffer();
                     const audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
                     this.buffers[key] = audioBuffer;
                 } catch (e) {
-                    console.warn("Load failed: " + key, e);
-                    if(key === 'bgm') {
-                        alert("BGM加载失败:\n" + url + "\n可能原因: 缓存未更新或格式不纯净");
-                    }
+                    console.warn("SFX Load failed: " + key);
                 }
                 loaded++;
                 if (onProgress) onProgress(Math.floor((loaded / keys.length) * 100));
             }
         },
 
-        // 最终用户点击，解锁并播放
+        // 用户点击进入时，解锁 WebAudio 并播放 Tag 音频
         unlockAndPlay: function() {
-            if (this.disabled || !this.ctx) return;
+            if (this.disabled) return;
             
-            if (this.ctx.state === 'suspended') {
+            // 1. 解锁 Web Audio (音效)
+            if (this.ctx && this.ctx.state === 'suspended') {
                 this.ctx.resume();
             }
-            
-            const buffer = this.ctx.createBuffer(1, 1, 22050);
-            const source = this.ctx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(this.ctx.destination);
-            source.start(0);
+            if (this.ctx) {
+                const buffer = this.ctx.createBuffer(1, 1, 22050);
+                const source = this.ctx.createBufferSource();
+                source.buffer = buffer;
+                source.connect(this.ctx.destination);
+                source.start(0);
+            }
 
-            this.playBGM();
+            // 2. 播放 BGM (Tag 方式)
+            const bgm = document.getElementById('bgm-music');
+            if (bgm) {
+                bgm.volume = 0.5;
+                bgm.play().catch(e => {
+                    console.log("BGM auto-play blocked, will play on next interaction", e);
+                });
+            }
         },
 
         play: function(key) {
@@ -598,50 +595,28 @@
             source.start(0);
         },
 
-        playBGM: function() {
-            if (this.disabled || !this.buffers['bgm']) return;
-            
-            if (this.bgmNode) {
-                try { this.bgmNode.stop(); } catch(e){}
-                this.bgmNode = null;
-            }
-            
-            this.bgmNode = this.ctx.createBufferSource();
-            this.bgmNode.buffer = this.buffers['bgm'];
-            this.bgmNode.loop = true;
-            
-            const bgmGain = this.ctx.createGain();
-            bgmGain.gain.value = 0.5; 
-            
-            this.bgmNode.connect(bgmGain);
-            bgmGain.connect(this.masterGain);
-            this.bgmNode.start(0);
-        },
-
         toggle: function() {
-            if(this.disabled) {
-                toast('静音模式运行中');
-                return;
-            }
             this.isMuted = !this.isMuted;
             let btn = document.querySelector('#btnSound .btn-icon');
+            const bgm = document.getElementById('bgm-music');
             
             if (this.isMuted) {
                 btn.innerText = '🔇';
-                if (this.masterGain) this.masterGain.gain.value = 0;
+                if (this.masterGain) this.masterGain.gain.value = 0; // 静音效
+                if (bgm) bgm.pause(); // 停BGM
                 toast('声音已关闭 🔇');
             } else {
                 btn.innerText = '🔊';
                 if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-                if (this.masterGain) this.masterGain.gain.value = 1;
-                if (!this.bgmNode) this.playBGM();
+                if (this.masterGain) this.masterGain.gain.value = 1; // 开音效
+                if (bgm) bgm.play().catch(e=>{}); // 开BGM
                 toast('声音已开启 🔊');
             }
         }
     };
 
     // ==========================================
-    // 新的启动流程逻辑
+    // 启动流程
     // ==========================================
     
     function preloadAssets() {

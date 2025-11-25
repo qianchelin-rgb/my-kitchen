@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - V40 音频重构版</title>
+    <title>💖 爱的厨房 - 4.2</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -111,7 +111,7 @@
             transition: transform 0.2s; pointer-events: auto;
         }
         .pot:active { transform: scale(0.9); }
-        .pot.selected { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 15px 10px rgba(0,0,0,0.2)); }
+        .pot.selected { transform: translateY(-10px) scale(1.1); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2)); }
 
         .pot-body {
             width: 100%; height: 100%; background: var(--pot-body);
@@ -201,38 +201,34 @@
             transition: width 0.05s linear, background 0.2s;
         }
 
-        /* === 底部菜单 (UI瘦身优化) === */
+        /* === 底部菜单 === */
         .controls {
-            background: #fff; padding: 10px 15px; z-index: 50;
+            background: #fff; padding: 15px; z-index: 50;
             box-shadow: 0 -5px 30px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0;
-            pointer-events: auto; display: flex; flex-direction: column; gap: 8px;
+            pointer-events: auto; display: flex; flex-direction: column; gap: 10px;
             flex-shrink: 0; 
             padding-bottom: max(15px, env(safe-area-inset-bottom));
         }
         
-        /* 核心修改：4列布局，按钮更小 */
         .home-menu-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); /* 4列 */
-            gap: 8px; 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
         }
         
         .menu-btn {
             background: #f9f9f9; border: 1px solid #eee; border-radius: 10px;
-            padding: 6px 0; /* 减小内边距 */
-            text-align: center; cursor: pointer; transition: 0.1s;
+            padding: 6px 0; text-align: center; cursor: pointer; transition: 0.1s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .menu-btn:active { transform: scale(0.95); background: #eee; }
-        .btn-icon { font-size: 20px; margin-bottom: 2px; } /* 缩小图标 */
-        .btn-txt { font-size: 10px; font-weight: bold; color: #666; } /* 缩小字体 */
+        .btn-icon { font-size: 20px; margin-bottom: 2px; }
+        .btn-txt { font-size: 10px; font-weight: bold; color: #666; }
         
         .start-btn-container {
             width: 100%; display: flex; justify-content: center; margin-top: 5px;
         }
         .start-btn {
             width: 100%; background: linear-gradient(to right, #ff7043, #ff8a65);
-            color: white; border: none; padding: 12px; font-size: 16px;
+            color: white; border: none; padding: 14px; font-size: 16px;
             border-radius: 16px; box-shadow: 0 6px 15px rgba(255, 112, 67, 0.3);
             font-weight: 900; cursor: pointer; text-align: center;
             display: flex; justify-content: center; align-items: center; gap: 8px;
@@ -257,7 +253,19 @@
         .ing-card:active { background: #f0f0f0; border-color: #ccc; transform: scale(0.95); }
         .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 0 5px; border-radius: 8px; margin-top: 2px; }
 
-        .pot-act { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 40; }
+        /* 修改：操作按钮上移，避免误触 */
+        .pot-act { 
+            position: absolute; 
+            top: -115px; /* 位于锅上方 */
+            left: 50%; 
+            transform: translateX(-50%); 
+            display: flex; 
+            gap: 15px; 
+            pointer-events: none; 
+            opacity: 0; 
+            transition: 0.2s; 
+            z-index: 40; 
+        }
         .pot-act.show { opacity: 1; pointer-events: auto; }
         .act-btn { border: none; padding: 10px 25px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 14px; }
 
@@ -290,7 +298,9 @@
             .stool-locked { width: 35px; height: 25px; font-size: 9px; }
             .cust { transform: scale(0.45); bottom: 35px; }
             .bubble { font-size: 12px; padding: 2px 4px; }
-            .pot-act { bottom: 120px; }
+            
+            /* 手机端操作按钮位置适配 */
+            .pot-act { top: -105px; }
         }
 
         @keyframes cookBob { 0%{transform:translateY(0);} 50%{transform:translateY(-2px);} 100%{transform:translateY(0);} }
@@ -317,6 +327,17 @@
 <audio id="sfx-pot" src="sound/pot.mp3" preload="auto"></audio>
 <audio id="sfx-cook" src="sound/cooking.mp3" preload="auto"></audio>
 <audio id="sfx-cash" src="sound/cash.mp3" preload="auto"></audio>
+
+<!-- 强制启动页 -->
+<div id="start-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#fff3e0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <div style="font-size:60px;margin-bottom:20px;">💖</div>
+    <h2 style="color:#ff7043;margin-bottom:30px;font-size:32px;text-shadow:2px 2px white;">爱的厨房</h2>
+    <button onclick="startGame()" style="background:#ff7043;color:white;border:none;padding:15px 50px;font-size:22px;border-radius:30px;box-shadow:0 8px 20px rgba(255,112,67,0.4);font-weight:bold;cursor:pointer;transition:0.2s;">
+        点我开始经营
+    </button>
+    <p style="color:#8d6e63;margin-top:20px;font-size:14px;">( 点击以启用音效 )</p>
+    <p style="position:absolute;bottom:30px;color:#aaa;font-size:12px;">V42 布局优化版</p>
+</div>
 
 <div class="app">
     <div class="top-bar">
@@ -365,7 +386,6 @@
                 <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
                 <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
                 <div class="menu-btn" onclick="showTutorial(true)"><span class="btn-icon">📢</span><span class="btn-txt">公告</span></div>
-                <!-- 新增：音频开关按钮 -->
                 <div class="menu-btn" onclick="toggleSound()" id="btnSound"><span class="btn-icon">🔇</span><span class="btn-txt">声音</span></div>
                 <div class="menu-btn" style="background:#e8f5e9; border-color:#c8e6c9;" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt" style="color:#2e7d32">保存</span></div>
             </div>
@@ -477,8 +497,8 @@
 
     let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
-    // 音频控制系统
-    let isMuted = true; // 默认静音
+    let audioUnlocked = false;
+    let isMuted = true;
 
     function toggleSound() {
         isMuted = !isMuted;
@@ -487,12 +507,14 @@
         
         if(!isMuted) {
             btn.innerText = '🔊';
-            bgm.volume = 0.5;
-            bgm.play().catch(e => console.log("BGM auto-play blocked, waiting for interaction"));
+            if(bgm) {
+                bgm.volume = 0.5;
+                bgm.play().catch(e => console.log("BGM auto-play blocked, waiting for interaction"));
+            }
             toast('声音已开启 🔊');
         } else {
             btn.innerText = '🔇';
-            bgm.pause();
+            if(bgm) bgm.pause();
             toast('声音已关闭 🔇');
         }
     }
@@ -503,6 +525,39 @@
         if(audio) {
             audio.currentTime = 0;
             audio.play().catch(e => {});
+        }
+    }
+
+    function startGame() {
+        document.getElementById('start-screen').style.display = 'none';
+        
+        // 强制激活音频
+        const audioIds = ['bgm', 'sfx-button', 'sfx-pot', 'sfx-cook', 'sfx-cash'];
+        audioIds.forEach(id => {
+            let el = document.getElementById(id);
+            if(el) {
+                el.muted = true;
+                el.play().then(() => {
+                    el.pause();
+                    el.currentTime = 0;
+                    el.muted = false;
+                }).catch(e => console.log("Audio warm-up skipped"));
+            }
+        });
+
+        // BGM处理：默认开启，但受到 toggleSound 控制
+        isMuted = false; 
+        document.querySelector('#btnSound .btn-icon').innerText = '🔊';
+        let bgm = document.getElementById('bgm');
+        if(bgm) {
+            bgm.volume = 0.5;
+            bgm.play().catch(e => console.log("BGM blocked"));
+        }
+
+        resizeGame();
+        init();
+        if(!localStorage.getItem('HK_Tutorial_Shown_V2')) {
+            showTutorial(false);
         }
     }
 
@@ -1129,7 +1184,10 @@
         saveGame(); 
     }
 
-    init();
+    // 初始化缩放
+    resizeGame();
+    // 兜底，万一resize没触发
+    setTimeout(resizeGame, 100);
 </script>
 </body>
 </html>

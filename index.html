@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>💖 爱的厨房 </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>💖 爱的厨房 /title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -16,7 +16,9 @@
 
         body {
             margin: 0; padding: 0; font-family: 'YouYuan', 'Microsoft YaHei', sans-serif;
-            background: var(--bg); color: var(--text); height: 100vh; overflow: hidden;
+            background: var(--bg); color: var(--text); 
+            height: 100vh; height: 100dvh; 
+            overflow: hidden;
             user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
@@ -24,47 +26,48 @@
 
         /* === 顶部 === */
         .top-bar {
-            padding: 15px 15px; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;
             background: rgba(255,255,255,0.9); backdrop-filter: blur(8px);
             border-bottom: 2px solid #ffe0b2; z-index: 20;
+            flex-shrink: 0;
         }
         .badge {
-            background: #fff; border: 2px solid #ffe0b2; padding: 4px 10px;
-            border-radius: 20px; font-size: 13px; font-weight: bold;
+            background: #fff; border: 2px solid #ffe0b2; padding: 2px 8px;
+            border-radius: 20px; font-size: 12px; font-weight: bold;
             display: flex; align-items: center; gap: 4px; color: #5d4037;
         }
-        .xp-track { width: 60px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; margin-top: 4px; }
+        .xp-track { width: 50px; height: 6px; background: #eee; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; margin-top: 4px; }
         .xp-fill { height: 100%; background: #66bb6a; width: 0%; transition: width 0.5s; }
 
         /* === 场景 === */
         .scene { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
         
         .wall {
-            height: 45%; position: relative; border-bottom: 12px solid #fff;
+            height: 40%; position: relative; border-bottom: 12px solid #fff;
             background-color: #fff3e0;
             background-image: radial-gradient(#ffccbc 1px, transparent 1px);
             background-size: 24px 24px;
         }
         
         .title-float {
-            position: absolute; top: 15%; width: 100%; text-align: center; pointer-events: none; z-index: 5;
+            position: absolute; top: 10%; width: 100%; text-align: center; pointer-events: none; z-index: 5;
             transition: 0.3s;
         }
         .title-float.hidden { opacity: 0; transform: translateY(-20px); }
-        .main-title { font-size: 42px; color: #ff8a80; text-shadow: 3px 3px 0 #fff; margin: 0; font-weight: 900; letter-spacing: 2px; }
-        .sub-title { background: #fff; color: #ffab91; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .main-title { font-size: 36px; color: #ff8a80; text-shadow: 2px 2px 0 #fff; margin: 0; font-weight: 900; letter-spacing: 2px; }
+        .sub-title { background: #fff; color: #ffab91; padding: 2px 10px; border-radius: 15px; font-size: 10px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
         .window {
-            position: absolute; left: 20px; top: 20px; width: 100px; height: 70px;
-            background: linear-gradient(#81d4fa, #e1f5fe); border: 6px solid #fff; border-radius: 12px;
+            position: absolute; left: 15px; top: 15px; width: 80px; height: 60px;
+            background: linear-gradient(#81d4fa, #e1f5fe); border: 4px solid #fff; border-radius: 12px;
             box-shadow: 0 5px 0 #eee; overflow: hidden;
         }
-        .cloud { position:absolute; top:15px; font-size:30px; opacity:0.9; animation: cloudMove 25s linear infinite; }
-        @keyframes cloudMove { from{left:-40px;} to{left:120px;} }
+        .cloud { position:absolute; top:10px; font-size:24px; opacity:0.9; animation: cloudMove 25s linear infinite; }
+        @keyframes cloudMove { from{left:-40px;} to{left:100px;} }
 
         .board {
-            position: absolute; right: 20px; top: 20px; width: 110px; height: 80px;
-            background: #4e342e; border: 5px solid #8d6e63; border-radius: 8px;
+            position: absolute; right: 15px; top: 15px; width: 90px; height: 70px;
+            background: #4e342e; border: 4px solid #8d6e63; border-radius: 8px;
             color: #fff; text-align: center; transform: rotate(-3deg); cursor: pointer;
             box-shadow: 0 5px 10px rgba(0,0,0,0.2); pointer-events: auto;
         }
@@ -76,53 +79,53 @@
 
         /* === 柜台与锅 === */
         .counter {
-            position: absolute; top: -60px; left: 5%; width: 90%; height: 100px;
-            background: #d7ccc8; border-radius: 16px; border-bottom: 16px solid #8d6e63;
+            position: absolute; top: -50px; left: 2%; width: 96%; height: 90px;
+            background: #d7ccc8; border-radius: 16px; border-bottom: 14px solid #8d6e63;
             display: flex; justify-content: space-around; align-items: flex-end;
-            padding-bottom: 20px; z-index: 10; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding-bottom: 15px; z-index: 10; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
 
         .stove-unit { 
-            position: relative; width: 80px; height: 80px; 
+            position: relative; width: 70px; height: 70px; 
             display: flex; justify-content: center; align-items: flex-end;
         }
         
         .burner {
-            position: absolute; bottom: 0; width: 64px; height: 14px;
+            position: absolute; bottom: 0; width: 54px; height: 12px;
             background: #3e2723; border-radius: 50%; border: 2px solid #5d4037;
             z-index: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .pot { 
-            width: 72px; height: 58px; position: relative; cursor: pointer; 
-            z-index: 5; margin-bottom: 5px; transform-origin: bottom center;
+            width: 64px; height: 50px; position: relative; cursor: pointer; 
+            z-index: 5; margin-bottom: 4px; transform-origin: bottom center;
             transition: transform 0.2s; pointer-events: auto;
         }
         .pot:active { transform: scale(0.9); }
-        .pot.selected { transform: translateY(-15px) scale(1.1); filter: drop-shadow(0 15px 10px rgba(0,0,0,0.2)); }
+        .pot.selected { transform: translateY(-10px) scale(1.1); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.2)); }
 
         .pot-body {
             width: 100%; height: 100%; background: var(--pot-body);
-            border-radius: 6px 6px 30px 30px; border: 3px solid var(--pot-stroke);
+            border-radius: 6px 6px 25px 25px; border: 3px solid var(--pot-stroke);
             position: relative; overflow: hidden;
         }
         .pot-lid {
-            position: absolute; top: -8px; left: -5%; width: 110%; height: 18px;
+            position: absolute; top: -8px; left: -5%; width: 110%; height: 16px;
             background: rgba(255,255,255,0.6); border-radius: 50%; 
             border: 3px solid var(--pot-stroke); z-index: 6;
         }
         .lid-knob {
-            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-            width: 18px; height: 10px; background: #3e2723; border-radius: 5px;
+            position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+            width: 14px; height: 8px; background: #3e2723; border-radius: 4px;
             border-bottom: 2px solid rgba(0,0,0,0.3);
         }
-        .pot-handle { position: absolute; top: 12px; width: 12px; height: 16px; background: var(--pot-stroke); border-radius: 4px; }
-        .pot-handle.l { left: -8px; } .pot-handle.r { right: -8px; }
+        .pot-handle { position: absolute; top: 10px; width: 10px; height: 14px; background: var(--pot-stroke); border-radius: 4px; }
+        .pot-handle.l { left: -7px; } .pot-handle.r { right: -7px; }
         
         .pot-icon {
-            position: absolute; top: -40px; width: 100%; text-align: center;
-            font-size: 28px; opacity: 0; transform: translateY(15px); transition: 0.3s;
+            position: absolute; top: -35px; width: 100%; text-align: center;
+            font-size: 24px; opacity: 0; transform: translateY(15px); transition: 0.3s;
             z-index: 7;
         }
         .pot.has-food .pot-icon { opacity: 1; transform: translateY(0); }
@@ -130,50 +133,60 @@
         .pot.done .pot-body { background: #66bb6a; border-color: #fff; }
 
         .pot-locked {
-            width: 64px; height: 50px; margin-bottom: 5px;
-            background: rgba(0,0,0,0.05); border-radius: 20px;
-            border: 3px dashed #bdbdbd; color: #9e9e9e;
+            width: 50px; height: 40px; margin-bottom: 5px;
+            background: rgba(0,0,0,0.05); border-radius: 15px;
+            border: 2px dashed #bdbdbd; color: #9e9e9e;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-size: 10px; cursor: pointer; pointer-events: auto;
         }
 
-        /* 座位优化 */
+        /* 新增：橘色提示小字 */
+        .pot-hint {
+            position: absolute; top: -55px; width: 100%; text-align: center;
+            font-size: 12px; color: #ff9800; font-weight: bold;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+            text-shadow: 1px 1px 0 #fff;
+        }
+        .pot-hint.show { opacity: 1; animation: hintBounce 0.5s infinite alternate; }
+        @keyframes hintBounce { from{transform:translateY(0);} to{transform:translateY(-5px);} }
+
+        /* 座位 */
         .seat-row { 
-            position: absolute; top: 180px; width: 100%; display: flex; justify-content: center; gap: 10px;
+            position: absolute; top: 130px; 
+            width: 100%; display: flex; justify-content: center; gap: 4px;
             z-index: 20; pointer-events: none;
         }
-        .seat-wrapper { width: 70px; height: 100px; position: relative; display: flex; justify-content: center; }
+        .seat-wrapper { width: 65px; height: 90px; position: relative; display: flex; justify-content: center; }
         .stool {
-            width: 45px; height: 35px; background: #8d6e63; border-radius: 50%;
-            border: 3px solid #5d4037; box-shadow: 0 5px 0 #3e2723;
-            position: absolute; bottom: 20px; z-index: 1;
+            width: 40px; height: 30px; background: #8d6e63; border-radius: 50%;
+            border: 3px solid #5d4037; box-shadow: 0 4px 0 #3e2723;
+            position: absolute; bottom: 15px; z-index: 1;
         }
         .stool-locked {
-            width: 45px; height: 35px; background: rgba(0,0,0,0.1); border-radius: 50%;
-            border: 2px dashed #aaa; position: absolute; bottom: 20px; z-index: 1;
-            display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888;
-            cursor: pointer; pointer-events: auto;
+            width: 40px; height: 30px; background: rgba(0,0,0,0.1); border-radius: 50%;
+            border: 2px dashed #aaa; position: absolute; bottom: 15px; z-index: 1;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888;
+            cursor: pointer; pointer-events: auto; text-align: center; line-height: 1.1;
         }
         
         .cust {
-            position: absolute; bottom: 45px; display: flex; flex-direction: column; align-items: center;
+            position: absolute; bottom: 40px; display: flex; flex-direction: column; align-items: center;
             opacity: 0; transition: 0.4s; z-index: 5; pointer-events: auto; cursor: pointer;
             transform: scale(0.5);
         }
         .cust.show { opacity: 1; transform: scale(1); }
-        .cust-head { font-size: 44px; z-index: 2; }
-        .cust-body { width: 40px; height: 28px; background: #90caf9; margin-top: -8px; border-radius: 15px 15px 5px 5px; z-index: 1; border: 2px solid rgba(0,0,0,0.1); }
+        .cust-head { font-size: 40px; z-index: 2; }
+        .cust-body { width: 36px; height: 26px; background: #90caf9; margin-top: -6px; border-radius: 12px 12px 4px 4px; z-index: 1; border: 2px solid rgba(0,0,0,0.1); }
         .bubble {
-            background: #fff; border: 3px solid #4e342e; padding: 4px 8px;
-            border-radius: 14px; font-size: 16px; font-weight: bold; margin-bottom: 5px;
+            background: #fff; border: 2px solid #4e342e; padding: 2px 6px;
+            border-radius: 12px; font-size: 14px; font-weight: bold; margin-bottom: 2px;
             z-index: 30; animation: float 2s infinite; white-space: nowrap;
         }
-        .bubble::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-width: 8px 8px 0; border-style: solid; border-color: #4e342e transparent transparent; }
+        .bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); border-width: 6px 6px 0; border-style: solid; border-color: #4e342e transparent transparent; }
 
-        /* 进度条 */
         .timer-track {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 5px; background: #eee; border: 1px solid #3e2723;
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            width: 36px; height: 4px; background: #eee; border: 1px solid #3e2723;
             border-radius: 4px; overflow: hidden; z-index: 40; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .timer-fill {
@@ -183,61 +196,82 @@
 
         /* === 底部菜单 === */
         .controls {
-            background: #fff; padding: 20px; z-index: 50;
-            box-shadow: 0 -5px 30px rgba(0,0,0,0.05); border-radius: 24px 24px 0 0;
-            pointer-events: auto; display: flex; flex-direction: column; gap: 15px;
+            background: #fff; padding: 15px; z-index: 50;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0;
+            pointer-events: auto; display: flex; flex-direction: column; gap: 10px;
+            flex-shrink: 0; padding-bottom: max(15px, env(safe-area-inset-bottom));
         }
         
         .home-menu-grid { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; 
         }
         
         .menu-btn {
-            background: #f9f9f9; border: 2px solid #eee; border-radius: 16px;
-            padding: 10px 0; text-align: center; cursor: pointer; transition: 0.1s;
+            background: #f9f9f9; border: 1px solid #eee; border-radius: 12px;
+            padding: 8px 0; text-align: center; cursor: pointer; transition: 0.1s;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .menu-btn:active { transform: scale(0.95); background: #eee; }
-        .btn-icon { font-size: 24px; margin-bottom: 4px; }
-        .btn-txt { font-size: 12px; font-weight: bold; color: #666; }
+        .btn-icon { font-size: 20px; margin-bottom: 2px; }
+        .btn-txt { font-size: 11px; font-weight: bold; color: #666; }
         
         .start-btn-container {
-            width: 100%; display: flex; justify-content: center; margin-top: 10px;
+            width: 100%; display: flex; justify-content: center; margin-top: 5px;
         }
         .start-btn {
             width: 100%; background: linear-gradient(to right, #ff7043, #ff8a65);
-            color: white; border: none; padding: 18px; font-size: 18px;
-            border-radius: 20px; box-shadow: 0 8px 20px rgba(255, 112, 67, 0.3);
+            color: white; border: none; padding: 14px; font-size: 16px;
+            border-radius: 16px; box-shadow: 0 6px 15px rgba(255, 112, 67, 0.3);
             font-weight: 900; cursor: pointer; text-align: center;
-            display: flex; justify-content: center; align-items: center; gap: 10px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
         .start-btn:active { transform: scale(0.98); }
 
-        .game-menu { display: none; overflow-x: auto; gap: 10px; padding-bottom: 10px; }
-        .ing-card { flex: 0 0 60px; height: 70px; background: #fff; border: 2px solid #eee; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .game-menu { display: none; overflow-x: auto; gap: 8px; padding-bottom: 5px; }
+        .ing-card { flex: 0 0 55px; height: 65px; background: #fff; border: 2px solid #eee; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
         .ing-card:active { background: #f0f0f0; border-color: #ccc; transform: scale(0.95); }
-        .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 1px 6px; border-radius: 10px; margin-top: 4px; }
+        .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 0 5px; border-radius: 8px; margin-top: 2px; }
 
-        .pot-act { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 40; }
+        .pot-act { position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: none; opacity: 0; transition: 0.2s; z-index: 40; }
         .pot-act.show { opacity: 1; pointer-events: auto; }
-        .act-btn { border: none; padding: 10px 25px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 14px; }
+        .act-btn { border: none; padding: 8px 20px; border-radius: 30px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 12px; }
 
         /* 弹窗通用 */
         .modal-mask { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal { background: #fff; width: 85%; max-width: 400px; max-height: 85vh; border-radius: 24px; display: flex; flex-direction: column; animation: pop 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .modal-head { padding: 15px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
-        .modal-head h3 { margin: 0; font-size: 18px; }
-        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-        .modal-foot { padding: 15px; border-top: 1px solid #f0f0f0; }
-        .list-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        .grid-item { border: 1px solid #eee; border-radius: 12px; padding: 10px; text-align: center; cursor: pointer; position: relative; transition:0.1s; }
+        .modal { background: #fff; width: 85%; max-width: 360px; max-height: 80vh; border-radius: 20px; display: flex; flex-direction: column; animation: pop 0.3s; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .modal-head { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-head h3 { margin: 0; font-size: 16px; }
+        .modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+        .modal-foot { padding: 12px; border-top: 1px solid #f0f0f0; }
+        .list-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .grid-item { border: 1px solid #eee; border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; position: relative; transition:0.1s; }
         .grid-item.sel { background: #fff3e0; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
+
+        @media (max-width: 450px), (max-height: 700px) {
+            .wall { height: 35%; }
+            .counter { top: -45px; height: 80px; }
+            .seat-row { top: 110px; }
+            .seat-wrapper { width: 60px; height: 85px; }
+            .stool { width: 35px; height: 25px; }
+            .stool-locked { width: 35px; height: 25px; font-size: 9px; }
+            .cust { transform: scale(0.45); bottom: 35px; }
+            .bubble { font-size: 12px; padding: 2px 4px; }
+            .main-title { font-size: 32px; }
+            .pot-act { bottom: 130px; }
+        }
 
         @keyframes cookBob { 0%{transform:translateY(0);} 50%{transform:translateY(-2px);} 100%{transform:translateY(0);} }
         @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
         @keyframes pop { from{transform:scale(0.9);opacity:0;} to{transform:scale(1);opacity:1;} }
 
-        .toast { position: fixed; top: 45%; left: 50%; transform: translate(-50%); background: rgba(0,0,0,0.85); color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; pointer-events: none; z-index: 500; transition: 0.3s; }
+        .toast { 
+            position: fixed; top: 30%; left: 50%; transform: translate(-50%); 
+            background: rgba(255, 255, 255, 0.9); color: #bf360c; 
+            padding: 5px 15px; border-radius: 20px; border: 2px solid #ff7043;
+            opacity: 0; pointer-events: none; z-index: 500; transition: 0.3s; 
+            font-size: 14px; font-weight: bold; text-align: center; width: auto; min-width: 80px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .end-btn { width: 100%; text-align: center; margin-top: 15px; font-size: 12px; color: #e53935; cursor: pointer; display: none; text-decoration: underline; }
         .close-x { font-size: 24px; cursor: pointer; color: #aaa; }
     </style>
@@ -299,13 +333,13 @@
                 </button>
             </div>
             
-            <div style="text-align:center; margin-top:15px;">
+            <div style="text-align:center; margin-top:10px;">
                 <span style="font-size:10px; color:#ccc; cursor:pointer; text-decoration:underline;" onclick="resetGame()">⚠️ 清除存档重开</span>
             </div>
         </div>
 
         <div class="game-menu" id="gameNav"></div>
-        <div style="display:none; text-align:center; margin-top:10px;" id="endBtn">
+        <div style="display:none; text-align:center; margin-top:5px;" id="endBtn">
             <span style="font-size:12px; color:#e53935; cursor:pointer;" onclick="endDay()">🛑 结束营业结算</span>
         </div>
     </div>
@@ -314,14 +348,16 @@
 <!-- 弹窗 -->
 <div id="modalMenu" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="menuTitle">📝 今日菜单</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><div class="list-grid" id="menuSelection"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="startBusiness()">🚀 开店</button></div></div></div>
 <div id="modalCommon" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="commTitle"></h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="commBody"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
-<div id="modalReport" class="modal-mask"><div class="modal"><div class="modal-body" style="text-align:center"><div style="font-size:50px">💰</div><h2>营收</h2><h1 style="color:green">+<span id="repMoney">0</span></h1></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="nextDay()">💤 休息</button></div></div></div>
+<div id="modalReport" class="modal-mask"><div class="modal"><div class="modal-body" style="text-align:center"><div style="font-size:50px">💰</div><h2>营收</h2><h1 style="color:green">+<span id="repMoney">0</span></h1><div id="repPenalty" style="color:#e53935;font-size:12px;margin-top:5px"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="nextDay()">💤 休息</button></div></div></div>
 <div id="modalGameOver" class="modal-mask" style="z-index:200;"><div class="modal" style="width:280px;height:auto;"><div class="modal-body" style="text-align:center;padding-top:20px;"><div style="font-size:50px;margin-bottom:10px">🚫</div><div style="font-weight:bold;color:#e53935">食材不足！</div><div id="gameOverMsg" style="font-size:12px;color:#666;margin-top:5px"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="closeGameOver()">知道了，结算</button></div></div></div>
 
 <div id="toast" class="toast">提示</div>
 
 <script>
-    const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'🧊',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
-    const RECIPES=[{id:'r1',n:'白米饭',req:['rice'],p:8,i:'🍚',lv:1},{id:'r2',n:'荷包蛋',req:['egg'],p:12,i:'🍳',lv:1},{id:'r3',n:'番茄炒蛋',req:['egg','tomato'],p:30,i:'🥘',lv:1},{id:'r4',n:'清汤面',req:['noodle'],p:18,i:'🍜',lv:3},{id:'r5',n:'炸薯条',req:['potato'],p:22,i:'🍟',lv:3},{id:'r6',n:'三明治',req:['bread','egg'],p:35,i:'🥪',lv:5},{id:'r7',n:'蔬菜沙拉',req:['veg','tomato'],p:28,i:'🥗',lv:5},{id:'r8',n:'蛋炒饭',req:['rice','egg'],p:32,i:'🍛',lv:7},{id:'r9',n:'豆腐汤',req:['tofu','veg'],p:30,i:'🍲',lv:7},{id:'r10',n:'牛奶布丁',req:['milk','sugar'],p:40,i:'🍮',lv:9},{id:'r11',n:'红烧肉',req:['meat','sugar'],p:65,i:'🍖',lv:9},{id:'r12',n:'炸鸡',req:['chicken','flour'],p:60,i:'🍗',lv:11},{id:'r13',n:'牛肉面',req:['noodle','meat'],p:70,i:'🍝',lv:11},{id:'r14',n:'鲜虾意面',req:['noodle','shrimp'],p:85,i:'🍤',lv:13},{id:'r15',n:'麻婆豆腐',req:['tofu','meat'],p:75,i:'🥘',lv:13},{id:'r16',n:'芝士蛋糕',req:['flour','cheese','sugar'],p:90,i:'🍰',lv:15},{id:'r17',n:'披萨',req:['flour','cheese','tomato'],p:95,i:'🍕',lv:17},{id:'r18',n:'炸鱼薯条',req:['fish','potato'],p:80,i:'🍱',lv:19},{id:'r19',n:'甜甜圈',req:['flour','sugar'],p:50,i:'🍩',lv:21},{id:'r20',n:'海鲜大餐',req:['fish','shrimp'],p:120,i:'🦞',lv:25}];
+    // 修改：豆腐图标为白色方块
+    const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'◻️',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
+    // 修改：番茄炒蛋图标为炖锅
+    const RECIPES=[{id:'r1',n:'白米饭',req:['rice'],p:8,i:'🍚',lv:1},{id:'r2',n:'荷包蛋',req:['egg'],p:12,i:'🍳',lv:1},{id:'r3',n:'番茄炒蛋',req:['egg','tomato'],p:30,i:'🍲',lv:1},{id:'r4',n:'清汤面',req:['noodle'],p:18,i:'🍜',lv:3},{id:'r5',n:'炸薯条',req:['potato'],p:22,i:'🍟',lv:3},{id:'r6',n:'三明治',req:['bread','egg'],p:35,i:'🥪',lv:5},{id:'r7',n:'蔬菜沙拉',req:['veg','tomato'],p:28,i:'🥗',lv:5},{id:'r8',n:'蛋炒饭',req:['rice','egg'],p:32,i:'🍛',lv:7},{id:'r9',n:'豆腐汤',req:['tofu','veg'],p:30,i:'🍲',lv:7},{id:'r10',n:'牛奶布丁',req:['milk','sugar'],p:40,i:'🍮',lv:9},{id:'r11',n:'红烧肉',req:['meat','sugar'],p:65,i:'🍖',lv:9},{id:'r12',n:'炸鸡',req:['chicken','flour'],p:60,i:'🍗',lv:11},{id:'r13',n:'牛肉面',req:['noodle','meat'],p:70,i:'🍝',lv:11},{id:'r14',n:'鲜虾意面',req:['noodle','shrimp'],p:85,i:'🍤',lv:13},{id:'r15',n:'麻婆豆腐',req:['tofu','meat'],p:75,i:'🥘',lv:13},{id:'r16',n:'芝士蛋糕',req:['flour','cheese','sugar'],p:90,i:'🍰',lv:15},{id:'r17',n:'披萨',req:['flour','cheese','tomato'],p:95,i:'🍕',lv:17},{id:'r18',n:'炸鱼薯条',req:['fish','potato'],p:80,i:'🍱',lv:19},{id:'r19',n:'甜甜圈',req:['flour','sugar'],p:50,i:'🍩',lv:21},{id:'r20',n:'海鲜大餐',req:['fish','shrimp'],p:120,i:'🦞',lv:25}];
     const FACILITIES=[{lv:1,name:'简陋',mult:1.0,cost:0,req:1},{lv:2,name:'温馨',mult:1.1,cost:500,req:5},{lv:3,name:'精致',mult:1.2,cost:1000,req:10},{lv:4,name:'豪华',mult:1.3,cost:1500,req:15},{lv:5,name:'星级',mult:1.4,cost:2500,req:20},{lv:6,name:'殿堂',mult:1.5,cost:5000,req:30}];
     const ACHIEVEMENTS=[
         {id:'1',n:'第一桶金',d:'获利',i:'💰',c:g=>g.totalEarned>0},
@@ -330,7 +366,7 @@
         {id:'4',n:'小有名气',d:'Lv10',i:'🏅',c:g=>g.lv>=10}
     ];
 
-    let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0},achieved:[],isPlaying:false};
+    let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set()};
 
     function loadGame(){ 
         const s=localStorage.getItem('HK_V24_Exp'); 
@@ -341,6 +377,7 @@
                 if(G.trend)G.trend=RECIPES.find(r=>r.id===G.trend.id)||RECIPES[0];
                 if(typeof G.seatsUnlocked === 'undefined') G.seatsUnlocked = 2;
                 while(G.seats.length < 4) G.seats.push(null);
+                if(!G.stats) G.stats={earn:0, penalty:0};
             }catch(e){}
         }else{
             for(let k in ITEMS)G.inv[k]=3;
@@ -356,6 +393,12 @@
     function init(){ 
         loadGame(); for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); 
         if(!G.trend){let u=RECIPES.filter(r=>r.lv<=G.lv);G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0];} 
+        
+        // 新增：在首页初始化时计算今日顾客数
+        let base = 6;
+        let bonus = (G.lv - 1) * 3;
+        G.queue = Math.min(50, base + bonus);
+
         updateUI(); 
         try { checkAch(); } catch(e) { console.error(e); } 
         G.seats=[null,null,null,null]; 
@@ -377,6 +420,7 @@
                 let c=''; if(p.status==='idle')c=p.items.map(k=>ITEMS[k].i).join(''); else if(p.status==='done')c=p.res.i;
                 d.innerHTML=`
                 <div class="burner"></div>
+                <div class="pot-hint">请选择我</div>
                 <div class="pot ${G.selPot===i?'selected':''} ${p.status} ${c?'has-food':''}" onclick="selPot(${i},event)">
                     <div class="pot-handle l"></div><div class="pot-handle r"></div>
                     <div class="pot-lid"><div class="lid-knob"></div></div>
@@ -426,8 +470,10 @@
         if(G.isPlaying){
             const gNav=document.getElementById('gameNav'); gNav.innerHTML='';
             for(let k in ITEMS){
-                let d=document.createElement('div'); d.className='ing-card'; d.innerHTML=`<div style="font-size:24px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
-                d.onclick=()=>addIng(k); gNav.appendChild(d);
+                if(G.activeIngredients.has(k)) {
+                    let d=document.createElement('div'); d.className='ing-card'; d.innerHTML=`<div style="font-size:24px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
+                    d.onclick=()=>addIng(k); gNav.appendChild(d);
+                }
             }
         }
     }
@@ -448,11 +494,90 @@
     }
 
     function selPot(i,e){e.stopPropagation();if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
-    function addIng(k){if(G.inv[k]<=0)return toast('没库存');if(G.selPot===-1)return toast('请选锅');let p=G.pots[G.selPot];if(p.status!=='idle')return toast('锅忙');G.inv[k]--;p.items.push(k);renderScene();}
+    function addIng(k){
+        if(G.inv[k]<=0)return toast('没库存');
+        // 修改：没选锅时不弹toast，而是显示橘色提示
+        if(G.selPot===-1){
+            document.querySelectorAll('.pot-hint').forEach(el => {
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 1000);
+            });
+            return;
+        }
+        let p=G.pots[G.selPot];
+        if(p.status!=='idle')return toast('锅忙');
+        G.inv[k]--;p.items.push(k);renderScene();
+    }
     function clearPot(){G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
     function cook(){ let p=G.pots[G.selPot]; p.status='cooking'; renderScene(); setTimeout(()=>{ let m=p.items.sort().join(','); let f=RECIPES.find(r=>r.req.slice().sort().join(',')===m); p.status='done'; p.res=f||{n:'黑暗料理',p:0,i:'🤢'}; renderScene(); },2000); }
-    function serve(i){ let p=G.pots[G.selPot]; let c=G.seats[i]; if(!p||p.status!=='done')return toast('没好'); if(!c)return; if(c.dish.n===p.res.n){ G.xp+=5; if(G.xp>=100){G.xp=0;G.lv++;toast(`升级 Lv.${G.lv}!`);} let fM=FACILITIES[G.facLv-1].mult; let tM=p.res.id===G.trend.id?2:1; let earn=Math.floor(p.res.p*fM*tM); if(Math.random()<0.05){let tip=Math.round(earn*0.5);earn+=tip;toast(`💖 小费 +${tip}`);}else{toast(`+$${earn}`);} G.money+=earn; G.totalEarned+=earn; G.stats.earn+=earn; G.seats[i]=null; G.pots[G.selPot]={items:[],status:'idle',res:null}; G.selPot=-1; updateUI(); checkAch(); renderScene(); }else toast('不要'); }
-    function customerLeave(i){ if(!G.seats[i])return; G.money=Math.max(0,G.money-5); G.seats[i]=null; toast('客人走了 -5'); updateUI(); renderScene(); checkDeadlock(); }
+    
+    function serve(i){ 
+        let p=G.pots[G.selPot]; 
+        let c=G.seats[i]; 
+        if(!p||p.status!=='done')return toast('没好'); 
+        if(!c)return; 
+        
+        if(c.type === 'alien') {
+            if(p.res.n === '黑暗料理') {
+                G.money += 100;
+                G.totalEarned += 100;
+                G.stats.earn += 100;
+                toast('👽: %**#￥@! (+$100)');
+                finishServe(i);
+            } else {
+                toast('👽: ...? (只吃🤢)');
+            }
+            return;
+        }
+
+        if(c.dish.n===p.res.n){ 
+            G.xp+=5; 
+            if(G.xp>=100){G.xp=0;G.lv++;toast(`升级 Lv.${G.lv}!`);} 
+            let fM=FACILITIES[G.facLv-1].mult; 
+            let tM=p.res.id===G.trend.id?2:1; 
+            let earn=Math.floor(p.res.p*fM*tM); 
+            
+            if(c.type === 'critic') {
+                earn *= 4;
+                toast(`🧐 美食家大赏 +$${earn}`);
+            } else {
+                if(Math.random()<0.05){let tip=Math.round(earn*0.5);earn+=tip;toast(`💖 小费 +${tip}`);}else{toast(`+$${earn}`);}
+            }
+            
+            G.money+=earn; 
+            G.totalEarned+=earn; 
+            G.stats.earn+=earn; 
+            finishServe(i);
+        }else toast('不要'); 
+    }
+
+    function finishServe(i) {
+        G.seats[i]=null; 
+        G.pots[G.selPot]={items:[],status:'idle',res:null}; 
+        G.selPot=-1; 
+        updateUI(); 
+        checkAch(); 
+        renderScene();
+    }
+
+    function customerLeave(i){ 
+        if(!G.seats[i])return; 
+        let c = G.seats[i];
+        
+        if(c.type === 'critic') {
+            G.money = Math.max(0, G.money - 200);
+            G.stats.penalty += 200;
+            toast('🧐 美食家愤怒离席! -$200');
+        } else {
+            G.money=Math.max(0,G.money-5); 
+            toast('客人走了 -5'); 
+        }
+        
+        G.seats[i]=null; 
+        updateUI(); 
+        renderScene(); 
+        checkDeadlock(); 
+    }
     
     let loopId;
     let spawnTick = 0;
@@ -465,6 +590,20 @@
         isEnding = false;
         document.getElementById('homeTitle').classList.add('hidden'); 
         
+        G.dailyFlags = { alien: false, critic: false };
+        G.dailyEvents = {
+            alien: Math.random() < 0.1, 
+            critic: (G.lv >= 10 && G.facLv >= 2) && Math.random() < 0.05 
+        };
+
+        G.activeIngredients = new Set();
+        G.menu.forEach(dish => {
+            dish.req.forEach(ing => G.activeIngredients.add(ing));
+        });
+        if(G.trend) {
+            G.trend.req.forEach(ing => G.activeIngredients.add(ing));
+        }
+
         let base = 6;
         let bonus = (G.lv - 1) * 3;
         G.queue = Math.min(50, base + bonus);
@@ -473,7 +612,7 @@
 
         G.seats=[null,null,null,null]; 
         G.selPot=-1; 
-        G.stats={earn:0}; 
+        G.stats={earn:0, penalty:0}; 
         for(let i=0;i<2;i++) if(i<G.potsUnlocked)G.pots[i]={items:[],status:'idle',res:null}; else G.pots[i].status='locked'; 
         
         document.getElementById('homeNav').style.display='none'; 
@@ -522,44 +661,54 @@
     }
 
     function spawnRandom() {
-        if(G.queue <= 0) return;
         let available = [];
         for(let i=0; i<G.seatsUnlocked; i++) {
             if(!G.seats[i]) available.push(i);
         }
         
-        if(available.length > 0 && Math.random() > 0.4) {
+        if(available.length > 0) {
             let seatIdx = available[Math.floor(Math.random() * available.length)];
-            spawn(seatIdx);
-            G.queue--;
-            updateUI(); 
+            
+            if(G.dailyEvents.alien && !G.dailyFlags.alien && Math.random() < 0.2) {
+                spawn(seatIdx, 'alien');
+                G.dailyFlags.alien = true;
+                return;
+            }
+            if(G.dailyEvents.critic && !G.dailyFlags.critic && Math.random() < 0.2) {
+                spawn(seatIdx, 'critic');
+                G.dailyFlags.critic = true;
+                G.queue--; 
+                updateUI();
+                return;
+            }
+
+            if(G.queue > 0 && Math.random() > 0.4) {
+                spawn(seatIdx, 'normal');
+                G.queue--;
+                updateUI(); 
+            }
         }
     }
 
-    // 核心修复：移除锅状态的检查，只要有库存就不算死局
     function checkDeadlock() {
         let active = G.seats.filter(c => c);
         if (active.length === 0) return;
 
         let hope = false;
         for (let c of active) {
-            // 1. 检查锅里有没有能用的（成品或半成品）
+            if(c.type === 'alien') { hope = true; break; }
+
             let inPot = G.pots.some(p => {
-                // 已做好
                 if (p.status === 'done' && p.res && p.res.id === c.dish.id) return true;
-                
                 let pm = p.items.slice().sort().join('');
                 let rm = c.dish.req.slice().sort().join('');
-                // 正在做（完全匹配）
                 return (p.status === 'cooking' || (p.status === 'idle' && p.items.length > 0)) && pm === rm;
             });
             if (inPot) { hope = true; break; }
 
-            // 2. 检查库存：只要有食材就算有希望（忽略锅是否被占用，因为可以倒掉）
             let canMake = c.dish.req.every(k => G.inv[k] > 0);
             if (canMake) { hope = true; break; }
 
-            // 3. 混合检查：锅里有一半，库存有另一半（仅针对闲置锅）
             let canComplete = G.pots.some(p => {
                 if (p.status !== 'idle' || p.items.length === 0) return false;
                 let pItems = [...p.items];
@@ -584,19 +733,31 @@
     function triggerGameOver(n){ G.isPlaying=false; clearInterval(loopId); document.getElementById('gameOverMsg').innerText=`无法制作: ${n}`; document.getElementById('modalGameOver').style.display='flex'; }
     function closeGameOver(){ document.getElementById('modalGameOver').style.display='none'; endDay(); }
     
-    function spawn(i){ 
+    function spawn(i, type = 'normal'){ 
         if(G.seats[i])return; 
         let d=G.menu[Math.floor(Math.random()*G.menu.length)]; 
         if(G.menu.includes(G.trend)&&Math.random()<0.3)d=G.trend; 
         const SHIRTS=['#90caf9','#a5d6a7','#ce93d8','#ffcc80']; 
         
-        G.seats[i]={
+        let customer = {
+            type: type,
             dish:d, 
             face:['👱','👵','👨','🧒'][Math.floor(Math.random()*4)], 
             shirt:SHIRTS[Math.floor(Math.random()*4)],
             spawnTime: Date.now(),
             maxTime: 15000 
-        }; 
+        };
+
+        if(type === 'alien') {
+            customer.face = '👽';
+            customer.dish = { n: '黑暗料理', i: '🤢' };
+            customer.maxTime = 20000;
+        } else if (type === 'critic') {
+            customer.face = '🧐';
+            customer.dish = G.trend; 
+        }
+
+        G.seats[i] = customer;
         renderScene(); 
     }
 
@@ -609,7 +770,9 @@
         saveGame(); 
         document.getElementById('homeTitle').classList.remove('hidden'); 
         document.getElementById('modalReport').style.display='flex'; 
-        document.getElementById('repMoney').innerText=G.stats.earn; 
+        document.getElementById('repMoney').innerText=G.stats.earn;
+        let pText = G.stats.penalty > 0 ? `(含罚款: -$${G.stats.penalty})` : '';
+        document.getElementById('repPenalty').innerText = pText;
     }
 
     function nextDay(){ G.day++; G.menu=[]; let u=RECIPES.filter(r=>r.lv<=G.lv); G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0]; for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); saveGame(); closeModal(); document.getElementById('homeNav').style.display='block'; document.getElementById('gameNav').style.display='none'; document.getElementById('endBtn').style.display='none'; init(); }

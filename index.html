@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 /title>
+    <title>💖 爱的厨房 - 修复版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -140,7 +140,6 @@
             font-size: 10px; cursor: pointer; pointer-events: auto;
         }
 
-        /* 新增：橘色提示小字 */
         .pot-hint {
             position: absolute; top: -55px; width: 100%; text-align: center;
             font-size: 12px; color: #ff9800; font-weight: bold;
@@ -227,8 +226,22 @@
         }
         .start-btn:active { transform: scale(0.98); }
 
-        .game-menu { display: none; overflow-x: auto; gap: 8px; padding-bottom: 5px; }
-        .ing-card { flex: 0 0 55px; height: 65px; background: #fff; border: 2px solid #eee; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        /* 配菜栏优化：自动换行，不滑动 */
+        .game-menu { 
+            display: none; 
+            flex-wrap: wrap; /* 允许换行 */
+            justify-content: center; 
+            gap: 6px; 
+            padding-bottom: 5px; 
+            overflow-y: auto; 
+            max-height: 140px; 
+        }
+        .ing-card { 
+            flex: 0 0 48px; height: 58px; /* 紧凑尺寸 */
+            background: #fff; border: 1px solid #ddd; border-radius: 8px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; position: relative; 
+        }
         .ing-card:active { background: #f0f0f0; border-color: #ccc; transform: scale(0.95); }
         .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 0 5px; border-radius: 8px; margin-top: 2px; }
 
@@ -354,22 +367,48 @@
 <div id="toast" class="toast">提示</div>
 
 <script>
-    // 修改：豆腐图标为白色方块
     const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'◻️',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
-    // 修改：番茄炒蛋图标为炖锅
-    const RECIPES=[{id:'r1',n:'白米饭',req:['rice'],p:8,i:'🍚',lv:1},{id:'r2',n:'荷包蛋',req:['egg'],p:12,i:'🍳',lv:1},{id:'r3',n:'番茄炒蛋',req:['egg','tomato'],p:30,i:'🍲',lv:1},{id:'r4',n:'清汤面',req:['noodle'],p:18,i:'🍜',lv:3},{id:'r5',n:'炸薯条',req:['potato'],p:22,i:'🍟',lv:3},{id:'r6',n:'三明治',req:['bread','egg'],p:35,i:'🥪',lv:5},{id:'r7',n:'蔬菜沙拉',req:['veg','tomato'],p:28,i:'🥗',lv:5},{id:'r8',n:'蛋炒饭',req:['rice','egg'],p:32,i:'🍛',lv:7},{id:'r9',n:'豆腐汤',req:['tofu','veg'],p:30,i:'🍲',lv:7},{id:'r10',n:'牛奶布丁',req:['milk','sugar'],p:40,i:'🍮',lv:9},{id:'r11',n:'红烧肉',req:['meat','sugar'],p:65,i:'🍖',lv:9},{id:'r12',n:'炸鸡',req:['chicken','flour'],p:60,i:'🍗',lv:11},{id:'r13',n:'牛肉面',req:['noodle','meat'],p:70,i:'🍝',lv:11},{id:'r14',n:'鲜虾意面',req:['noodle','shrimp'],p:85,i:'🍤',lv:13},{id:'r15',n:'麻婆豆腐',req:['tofu','meat'],p:75,i:'🥘',lv:13},{id:'r16',n:'芝士蛋糕',req:['flour','cheese','sugar'],p:90,i:'🍰',lv:15},{id:'r17',n:'披萨',req:['flour','cheese','tomato'],p:95,i:'🍕',lv:17},{id:'r18',n:'炸鱼薯条',req:['fish','potato'],p:80,i:'🍱',lv:19},{id:'r19',n:'甜甜圈',req:['flour','sugar'],p:50,i:'🍩',lv:21},{id:'r20',n:'海鲜大餐',req:['fish','shrimp'],p:120,i:'🦞',lv:25}];
+    const RECIPES=[
+        {id:'r1',n:'白米饭',req:['rice'],p:7,i:'🍚',lv:1},
+        {id:'r2',n:'荷包蛋',req:['egg'],p:10,i:'🍳',lv:1},
+        {id:'r3',n:'番茄炒蛋',req:['egg','tomato'],p:26,i:'🍲',lv:1},
+        {id:'r4',n:'清汤面',req:['noodle'],p:15,i:'🍜',lv:3},
+        {id:'r5',n:'炸薯条',req:['potato'],p:18,i:'🍟',lv:3},
+        {id:'r6',n:'三明治',req:['bread','egg'],p:30,i:'🥪',lv:5},
+        {id:'r7',n:'蔬菜沙拉',req:['veg','tomato'],p:24,i:'🥗',lv:5},
+        {id:'r8',n:'蛋炒饭',req:['rice','egg'],p:27,i:'🍛',lv:7},
+        {id:'r9',n:'豆腐汤',req:['tofu','veg'],p:26,i:'🍲',lv:7},
+        {id:'r10',n:'牛奶布丁',req:['milk','sugar'],p:32,i:'🍮',lv:9},
+        {id:'r11',n:'红烧肉',req:['meat','sugar'],p:55,i:'🍖',lv:9},
+        {id:'r12',n:'炸鸡',req:['chicken','flour'],p:51,i:'🍗',lv:11},
+        {id:'r13',n:'牛肉面',req:['noodle','meat'],p:60,i:'🍝',lv:11},
+        {id:'r14',n:'鲜虾意面',req:['noodle','shrimp'],p:70,i:'🍤',lv:13},
+        {id:'r15',n:'麻婆豆腐',req:['tofu','meat'],p:64,i:'🥘',lv:13},
+        {id:'r16',n:'芝士蛋糕',req:['flour','cheese','sugar'],p:75,i:'🍰',lv:15},
+        {id:'r17',n:'披萨',req:['flour','cheese','tomato'],p:81,i:'🍕',lv:17},
+        {id:'r18',n:'炸鱼薯条',req:['fish','potato'],p:68,i:'🍱',lv:19},
+        {id:'r19',n:'甜甜圈',req:['flour','sugar'],p:40,i:'🍩',lv:21},
+        {id:'r20',n:'海鲜大餐',req:['fish','shrimp'],p:102,i:'🦞',lv:25}
+    ];
     const FACILITIES=[{lv:1,name:'简陋',mult:1.0,cost:0,req:1},{lv:2,name:'温馨',mult:1.1,cost:500,req:5},{lv:3,name:'精致',mult:1.2,cost:1000,req:10},{lv:4,name:'豪华',mult:1.3,cost:1500,req:15},{lv:5,name:'星级',mult:1.4,cost:2500,req:20},{lv:6,name:'殿堂',mult:1.5,cost:5000,req:30}];
     const ACHIEVEMENTS=[
         {id:'1',n:'第一桶金',d:'获利',i:'💰',c:g=>g.totalEarned>0},
         {id:'2',n:'千元户',d:'赚1000',i:'💴',c:g=>g.totalEarned>=1000},
         {id:'3',n:'万元户',d:'赚10000',i:'💎',c:g=>g.totalEarned>=10000},
-        {id:'4',n:'小有名气',d:'Lv10',i:'🏅',c:g=>g.lv>=10}
+        {id:'4',n:'小有名气',d:'Lv10',i:'🏅',c:g=>g.lv>=10},
+        {id:'5',n:'风生水起',d:'Lv20',i:'🎏',c:g=>g.lv>=20},
+        {id:'6',n:'资深老手',d:'Lv30',i:'🎖️',c:g=>g.lv>=30},
+        {id:'7',n:'米其林大厨',d:'Lv50',i:'👨‍🍳',c:g=>g.lv>=50},
+        {id:'8',n:'天外来客',d:'服务外星人',i:'👽',c:g=>g.stats.aliensServed>0},
+        {id:'9',n:'美食大比拼',d:'服务美食家',i:'🧐',c:g=>g.stats.criticsServed>0},
+        {id:'10',n:'谁吐锅里了',d:'做黑暗料理',i:'🤢',c:g=>g.stats.vomitMade>0},
+        {id:'11',n:'留不住人',d:'气走10人',i:'🏃',c:g=>g.stats.angryLeaves>=10}
     ];
 
-    let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set()};
+    let G={money:200,totalEarned:0,day:1,lv:1,xp:0,facLv:1,inv:{},prices:{},menu:[],trend:null,potsUnlocked:1,seatsUnlocked:2,pots:[],seats:[null,null,null,null],queue:0,selPot:-1,stats:{earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0},achieved:[],isPlaying:false, dailyEvents:{}, dailyFlags:{}, activeIngredients: new Set(), prevPrices:{}};
 
     function loadGame(){ 
-        const s=localStorage.getItem('HK_V24_Exp'); 
+        const s=localStorage.getItem('HK_V34_Exp'); 
         if(s){
             try{
                 const d=JSON.parse(s);
@@ -377,7 +416,7 @@
                 if(G.trend)G.trend=RECIPES.find(r=>r.id===G.trend.id)||RECIPES[0];
                 if(typeof G.seatsUnlocked === 'undefined') G.seatsUnlocked = 2;
                 while(G.seats.length < 4) G.seats.push(null);
-                if(!G.stats) G.stats={earn:0, penalty:0};
+                if(!G.stats) G.stats={earn:0, penalty:0, aliensServed:0, criticsServed:0, vomitMade:0, angryLeaves:0};
             }catch(e){}
         }else{
             for(let k in ITEMS)G.inv[k]=3;
@@ -386,17 +425,21 @@
             G.pots=[]; for(let i=0;i<2;i++) G.pots.push({items:[],status:i<G.potsUnlocked?'idle':'locked',res:null}); 
         } 
     }
-    function saveGame(){ localStorage.setItem('HK_V24_Exp',JSON.stringify(G)); }
+    function saveGame(){ localStorage.setItem('HK_V34_Exp',JSON.stringify(G)); }
     function manualSave(){ saveGame(); toast('✅ 存档成功'); }
-    function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V24_Exp');location.reload();} }
+    function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V34_Exp');location.reload();} }
 
     function init(){ 
-        loadGame(); for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); 
+        loadGame(); 
+        if(Object.keys(G.prevPrices).length === 0) {
+            for(let k in ITEMS) G.prevPrices[k] = ITEMS[k].p;
+        }
+        randomizePrices();
+
         if(!G.trend){let u=RECIPES.filter(r=>r.lv<=G.lv);G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0];} 
         
-        // 新增：在首页初始化时计算今日顾客数
         let base = 6;
-        let bonus = (G.lv - 1) * 3;
+        let bonus = Math.round(G.lv * 1.5);
         G.queue = Math.min(50, base + bonus);
 
         updateUI(); 
@@ -404,6 +447,17 @@
         G.seats=[null,null,null,null]; 
         renderScene(); 
     }
+
+    function randomizePrices() {
+        if(Object.keys(G.prices).length === 0) {
+             for(let k in ITEMS) {
+                let base = ITEMS[k].p;
+                let factor = 0.85 + Math.random() * 0.35; // 0.85 ~ 1.20
+                G.prices[k] = Math.ceil(base * factor);
+            }
+        }
+    }
+
     function updateUI(){ 
         document.getElementById('uiMoney').innerText=G.money; document.getElementById('uiDay').innerText=G.day; document.getElementById('uiLv').innerText=G.lv; document.getElementById('trendIcon').innerText=G.trend.i; 
         document.getElementById('uiQueue').innerText=G.queue;
@@ -471,7 +525,7 @@
             const gNav=document.getElementById('gameNav'); gNav.innerHTML='';
             for(let k in ITEMS){
                 if(G.activeIngredients.has(k)) {
-                    let d=document.createElement('div'); d.className='ing-card'; d.innerHTML=`<div style="font-size:24px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
+                    let d=document.createElement('div'); d.className='ing-card'; d.innerHTML=`<div style="font-size:22px">${ITEMS[k].i}</div><div class="ing-qty">${G.inv[k]}</div>`;
                     d.onclick=()=>addIng(k); gNav.appendChild(d);
                 }
             }
@@ -496,7 +550,6 @@
     function selPot(i,e){e.stopPropagation();if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
     function addIng(k){
         if(G.inv[k]<=0)return toast('没库存');
-        // 修改：没选锅时不弹toast，而是显示橘色提示
         if(G.selPot===-1){
             document.querySelectorAll('.pot-hint').forEach(el => {
                 el.classList.add('show');
@@ -509,7 +562,23 @@
         G.inv[k]--;p.items.push(k);renderScene();
     }
     function clearPot(){G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
-    function cook(){ let p=G.pots[G.selPot]; p.status='cooking'; renderScene(); setTimeout(()=>{ let m=p.items.sort().join(','); let f=RECIPES.find(r=>r.req.slice().sort().join(',')===m); p.status='done'; p.res=f||{n:'黑暗料理',p:0,i:'🤢'}; renderScene(); },2000); }
+    function cook(){ 
+        let p=G.pots[G.selPot]; 
+        p.status='cooking'; 
+        renderScene(); 
+        setTimeout(()=>{ 
+            let m=p.items.sort().join(','); 
+            let f=RECIPES.find(r=>r.req.slice().sort().join(',')===m); 
+            p.status='done'; 
+            if(f) {
+                p.res=f;
+            } else {
+                p.res={n:'黑暗料理',p:0,i:'🤢'};
+                G.stats.vomitMade++; 
+            }
+            renderScene(); 
+        },2000); 
+    }
     
     function serve(i){ 
         let p=G.pots[G.selPot]; 
@@ -531,8 +600,21 @@
         }
 
         if(c.dish.n===p.res.n){ 
-            G.xp+=5; 
-            if(G.xp>=100){G.xp=0;G.lv++;toast(`升级 Lv.${G.lv}!`);} 
+            if(G.lv < 50) {
+                let xpGain = 0.5;
+                if(G.lv < 10) xpGain = 5;
+                else if(G.lv < 20) xpGain = 4;
+                else if(G.lv < 35) xpGain = 3;
+                else if(G.lv < 45) xpGain = 1.5;
+                
+                G.xp += xpGain;
+                if(G.xp >= 100){
+                    G.xp=0;
+                    G.lv++;
+                    toast(`升级 Lv.${G.lv}!`);
+                }
+            }
+
             let fM=FACILITIES[G.facLv-1].mult; 
             let tM=p.res.id===G.trend.id?2:1; 
             let earn=Math.floor(p.res.p*fM*tM); 
@@ -540,10 +622,13 @@
             if(c.type === 'critic') {
                 earn *= 4;
                 toast(`🧐 美食家大赏 +$${earn}`);
+                G.stats.criticsServed++;
             } else {
                 if(Math.random()<0.05){let tip=Math.round(earn*0.5);earn+=tip;toast(`💖 小费 +${tip}`);}else{toast(`+$${earn}`);}
             }
             
+            if(c.type === 'alien') G.stats.aliensServed++;
+
             G.money+=earn; 
             G.totalEarned+=earn; 
             G.stats.earn+=earn; 
@@ -564,6 +649,8 @@
         if(!G.seats[i])return; 
         let c = G.seats[i];
         
+        G.stats.angryLeaves++; 
+
         if(c.type === 'critic') {
             G.money = Math.max(0, G.money - 200);
             G.stats.penalty += 200;
@@ -584,7 +671,9 @@
     let isEnding = false;
 
     function startBusiness(){ 
-        if(G.menu.length<1)return toast('请选菜'); 
+        let minDishes = G.lv >= 20 ? 5 : 3;
+        if(G.menu.length < minDishes) return toast(`至少选择 ${minDishes} 道菜`);
+
         closeModal(); 
         G.isPlaying=true; 
         isEnding = false;
@@ -605,14 +694,15 @@
         }
 
         let base = 6;
-        let bonus = (G.lv - 1) * 3;
+        let bonus = Math.round(G.lv * 1.5);
         G.queue = Math.min(50, base + bonus);
 
         updateUI(); 
 
         G.seats=[null,null,null,null]; 
         G.selPot=-1; 
-        G.stats={earn:0, penalty:0}; 
+        G.stats.earn = 0;
+        G.stats.penalty = 0;
         for(let i=0;i<2;i++) if(i<G.potsUnlocked)G.pots[i]={items:[],status:'idle',res:null}; else G.pots[i].status='locked'; 
         
         document.getElementById('homeNav').style.display='none'; 
@@ -775,12 +865,47 @@
         document.getElementById('repPenalty').innerText = pText;
     }
 
-    function nextDay(){ G.day++; G.menu=[]; let u=RECIPES.filter(r=>r.lv<=G.lv); G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0]; for(let k in ITEMS)G.prices[k]=Math.ceil(ITEMS[k].p*(0.9+Math.random()*0.3)); saveGame(); closeModal(); document.getElementById('homeNav').style.display='block'; document.getElementById('gameNav').style.display='none'; document.getElementById('endBtn').style.display='none'; init(); }
+    function nextDay(){ 
+        G.day++; 
+        G.menu=[]; 
+        let u=RECIPES.filter(r=>r.lv<=G.lv); 
+        G.trend=u[Math.floor(Math.random()*u.length)]||RECIPES[0]; 
+        
+        G.prevPrices = {...G.prices};
+        for(let k in ITEMS) {
+            let base = ITEMS[k].p;
+            let factor = 0.85 + Math.random() * 0.35;
+            G.prices[k] = Math.ceil(base * factor);
+        }
+
+        saveGame(); 
+        closeModal(); 
+        document.getElementById('homeNav').style.display='block'; 
+        document.getElementById('gameNav').style.display='none'; 
+        document.getElementById('endBtn').style.display='none'; 
+        init(); 
+    }
     
     function checkAndOpenMenu() { try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
 
     function showCommon(t, h) { document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
-    function openMarket() { showCommon('🥦 菜市场', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item" onclick="buyItem('${k}')"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:orange">$${G.prices[k]}</div><div style="font-size:10px;color:#aaa">拥:${G.inv[k]}</div></div>`).join('')}</div>`); }
+    function openMarket() { 
+        let header = `<p style="text-align:center;color:#795548;font-size:14px;margin-bottom:10px;font-weight:bold">今日价格如下，欢迎采购哦！</p>`;
+        let grid = `<div class="list-grid">${Object.keys(ITEMS).map(k=>{
+            let price = G.prices[k];
+            let old = G.prevPrices[k] || ITEMS[k].p;
+            let diff = price - old;
+            let diffText = diff > 0 ? `+$${diff}` : (diff < 0 ? `-$${Math.abs(diff)}` : '');
+            let arrow = diff > 0 ? `<span style="color:#e53935">⬆${diffText}</span>` : (diff < 0 ? `<span style="color:#43a047">⬇${diffText}</span>` : '<span style="color:#aaa">-</span>');
+            return `<div class="grid-item" onclick="buyItem('${k}')">
+                <div style="font-size:24px">${ITEMS[k].i}</div>
+                <div>${ITEMS[k].n}</div>
+                <div style="color:orange;font-weight:bold">$${price} <small style="font-size:10px">${arrow}</small></div>
+                <div style="font-size:10px;color:#aaa">拥:${G.inv[k]}</div>
+            </div>`
+        }).join('')}</div>`;
+        showCommon('🥦 菜市场 (每日浮动)', header + grid); 
+    }
     function buyItem(k) { if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
     function openWarehouse() { showCommon('📦 仓库', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:#888">x${G.inv[k]}</div></div>`).join('')}</div>`); }
     
@@ -795,7 +920,7 @@
     function openUpgrade() { showCommon('🏗️ 装修', `<div style="display:flex;flex-direction:column;gap:10px">${FACILITIES.map(f=>{let cur=G.facLv===f.lv; return `<div style="display:flex;justify-content:space-between;padding:10px;border:1px solid ${cur?'#81c784':'#eee'};background:${cur?'#e8f5e9':'#fff'};border-radius:10px"><div><b>${f.name}</b><small> (${Math.round(f.mult*100)}%)</small></div>${cur?'<small>当前</small>':(G.facLv>f.lv?'<small>已购</small>':(G.lv<f.reqLv?`<small>Lv.${f.reqLv}</small>`:`<button onclick="buyFac(${f.lv})" style="background:#42a5f5;color:white;border:none;padding:2px 8px;border-radius:10px">升级 $${f.cost}</button>`))}</div>`}).join('')}</div>`); }
     function buyFac(lv) { let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
     function openMenu() { 
-        document.getElementById('menuTitle').innerText=`📝 菜单 (${G.menu.length}/5)`; 
+        document.getElementById('menuTitle').innerText=`📝 菜单 (${G.menu.length}/8)`; 
         document.getElementById('menuSelection').innerHTML = RECIPES.filter(r=>r.lv<=G.lv).map(r=>{
             let sel=G.menu.includes(r);
             return `<div class="grid-item ${sel?'sel':''}" onclick="togMenu('${r.id}')"><div style="font-size:24px">${r.i}</div><div>${r.n}</div>${r.id===G.trend.id?'🔥':''}</div>`
@@ -805,7 +930,10 @@
     window.togMenu = function(id) { 
         let r=RECIPES.find(x=>x.id===id); 
         if(G.menu.includes(r))G.menu=G.menu.filter(x=>x!==r); 
-        else{if(G.menu.length>=5)return toast('限5道'); G.menu.push(r);} 
+        else{
+            if(G.menu.length>=8)return toast('最多选8道'); 
+            G.menu.push(r);
+        } 
         openMenu(); 
     }
     

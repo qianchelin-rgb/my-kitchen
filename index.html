@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - 修复版</title>
+    <title>💖 爱的厨房 - 4.1音效测试版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -226,22 +226,8 @@
         }
         .start-btn:active { transform: scale(0.98); }
 
-        /* 配菜栏优化：自动换行，不滑动 */
-        .game-menu { 
-            display: none; 
-            flex-wrap: wrap; /* 允许换行 */
-            justify-content: center; 
-            gap: 6px; 
-            padding-bottom: 5px; 
-            overflow-y: auto; 
-            max-height: 140px; 
-        }
-        .ing-card { 
-            flex: 0 0 48px; height: 58px; /* 紧凑尺寸 */
-            background: #fff; border: 1px solid #ddd; border-radius: 8px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            cursor: pointer; position: relative; 
-        }
+        .game-menu { display: none; overflow-x: auto; gap: 8px; padding-bottom: 5px; }
+        .ing-card { flex: 0 0 55px; height: 65px; background: #fff; border: 2px solid #eee; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; }
         .ing-card:active { background: #f0f0f0; border-color: #ccc; transform: scale(0.95); }
         .ing-qty { font-size: 10px; color: #888; background: #eee; padding: 0 5px; border-radius: 8px; margin-top: 2px; }
 
@@ -261,7 +247,14 @@
         .grid-item.sel { background: #fff3e0; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
 
         @media (max-width: 450px), (max-height: 700px) {
+            .title-float { top: 65px; } 
+            .main-title { font-size: 28px; margin-bottom: -5px; }
+            .sub-title { font-size: 10px; transform: scale(0.9); }
+            
             .wall { height: 35%; }
+            .window { top: 60px; width: 70px; height: 50px; }
+            .board { top: 60px; width: 80px; height: 60px; }
+
             .counter { top: -45px; height: 80px; }
             .seat-row { top: 110px; }
             .seat-wrapper { width: 60px; height: 85px; }
@@ -291,6 +284,13 @@
 </head>
 <body>
 
+<!-- 音频资源: 请将对应的 mp3 文件放在 music/ 和 sound/ 文件夹下 -->
+<audio id="bgm" loop src="music/ztq.mp3"></audio>
+<audio id="sfx-button" src="sound/button.mp3"></audio>
+<audio id="sfx-pot" src="sound/pot.mp3"></audio>            <!-- 原: 锅盖音效 -->
+<audio id="sfx-cook" src="sound/cooking.mp3"></audio>       <!-- 原: 烹饪音效 -->
+<audio id="sfx-cash" src="sound/cash.mp3"></audio>          <!-- 原: 收钱音效 -->
+
 <div class="app">
     <div class="top-bar">
         <div class="badge">💰 <span id="uiMoney">0</span></div>
@@ -310,7 +310,7 @@
 
         <div class="wall">
             <div class="window"><div class="cloud">☁️</div></div>
-            <div class="board" onclick="toast('必吃榜：收益翻倍！')">
+            <div class="board" onclick="toast('必吃榜：收益翻倍！');playSound('sfx-button')">
                 <div style="font-size:10px;color:#ffcc80">TODAY</div>
                 <div style="font-size:30px" id="trendIcon">?</div>
                 <div style="font-size:10px;background:#e53935;padding:0 5px;border-radius:4px;color:white">HOT</div>
@@ -337,6 +337,7 @@
                 <div class="menu-btn" onclick="openRecipes()"><span class="btn-icon">📖</span><span class="btn-txt">食谱</span></div>
                 <div class="menu-btn" onclick="openUpgrade()"><span class="btn-icon">🏗️</span><span class="btn-txt">装修</span></div>
                 <div class="menu-btn" onclick="openAchieve()"><span class="btn-icon">🏆</span><span class="btn-txt">成就</span></div>
+                <div class="menu-btn" onclick="showTutorial(true)"><span class="btn-icon">📢</span><span class="btn-txt">公告</span></div>
                 <div class="menu-btn" style="background:#e8f5e9; border-color:#c8e6c9;" onclick="manualSave()"><span class="btn-icon">💾</span><span class="btn-txt" style="color:#2e7d32">保存</span></div>
             </div>
             
@@ -358,6 +359,26 @@
     </div>
 </div>
 
+<!-- 新手引导弹窗 -->
+<div id="modalTutorial" class="modal-mask" style="z-index: 999;">
+    <div class="modal">
+        <div class="modal-head" style="justify-content:center; border-bottom:none; padding-bottom:0;">
+            <div style="font-size:40px;">💖</div>
+        </div>
+        <div class="modal-body" style="text-align:center; padding-top:5px;">
+            <h2 id="tutTitle" style="color:#ff7043; margin:0 0 10px 0;">欢迎店长大人！</h2>
+            <p id="tutIntro" style="color:#5d4037; font-size:14px; line-height:1.6;">
+                终于等到你啦~ 这里是属于你的<b>「爱的厨房」</b>！<br>
+                虽然现在店里还空荡荡的，但我相信在你的经营下，一定会成为远近闻名的美食店！
+            </p>
+            <div id="tutContent" style="margin:15px 0;"></div>
+        </div>
+        <div class="modal-foot">
+            <button id="tutBtn" class="act-btn" style="background:var(--primary);width:100%; font-size:16px;" onclick="closeTutorial()">收下资金，开始经营！💪</button>
+        </div>
+    </div>
+</div>
+
 <!-- 弹窗 -->
 <div id="modalMenu" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="menuTitle">📝 今日菜单</h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body"><div class="list-grid" id="menuSelection"></div></div><div class="modal-foot"><button class="act-btn" style="background:var(--primary);width:100%" onclick="startBusiness()">🚀 开店</button></div></div></div>
 <div id="modalCommon" class="modal-mask"><div class="modal"><div class="modal-head"><h3 id="commTitle"></h3><span class="close-x" onclick="closeModal()">×</span></div><div class="modal-body" id="commBody"></div><div class="modal-foot"><button class="act-btn" style="background:#aaa;width:100%" onclick="closeModal()">关闭</button></div></div></div>
@@ -367,7 +388,7 @@
 <div id="toast" class="toast">提示</div>
 
 <script>
-    const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'◻️',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
+    const ITEMS={rice:{n:'大米',i:'🍚',p:3},egg:{n:'鸡蛋',i:'🥚',p:5},tomato:{n:'番茄',i:'🍅',p:6},noodle:{n:'面条',i:'🍜',p:5},veg:{n:'青菜',i:'🥬',p:5},potato:{n:'土豆',i:'🥔',p:5},meat:{n:'鲜肉',i:'🥩',p:18},fish:{n:'鲜鱼',i:'🐟',p:23},bread:{n:'面包',i:'🍞',p:8},flour:{n:'面粉',i:'🥡',p:6},sugar:{n:'糖',i:'🍬',p:5},milk:{n:'牛奶',i:'🥛',p:8},chicken:{n:'鸡肉',i:'🍗',p:15},tofu:{n:'豆腐',i:'⬜',p:6},shrimp:{n:'虾仁',i:'🍤',p:23},cheese:{n:'奶酪',i:'🧀',p:12}};
     const RECIPES=[
         {id:'r1',n:'白米饭',req:['rice'],p:7,i:'🍚',lv:1},
         {id:'r2',n:'荷包蛋',req:['egg'],p:10,i:'🍳',lv:1},
@@ -426,11 +447,31 @@
         } 
     }
     function saveGame(){ localStorage.setItem('HK_V34_Exp',JSON.stringify(G)); }
-    function manualSave(){ saveGame(); toast('✅ 存档成功'); }
-    function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V34_Exp');location.reload();} }
+    function manualSave(){ saveGame(); toast('✅ 存档成功'); playSound('sfx-button'); }
+    function resetGame(){ if(confirm('确定重置？')){localStorage.removeItem('HK_V34_Exp');localStorage.removeItem('HK_Tutorial_Shown_V2');location.reload();} }
+
+    function playSound(id) {
+        let audio = document.getElementById(id);
+        if(audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio block"));
+        }
+    }
+    function playBGM() {
+        let bgm = document.getElementById('bgm');
+        if(bgm && bgm.paused) {
+            bgm.volume = 0.5;
+            bgm.play().catch(e => console.log("BGM wait interaction"));
+        }
+    }
 
     function init(){ 
         loadGame(); 
+        
+        if(!localStorage.getItem('HK_Tutorial_Shown_V2')) {
+            showTutorial(false);
+        }
+
         if(Object.keys(G.prevPrices).length === 0) {
             for(let k in ITEMS) G.prevPrices[k] = ITEMS[k].p;
         }
@@ -446,6 +487,58 @@
         try { checkAch(); } catch(e) { console.error(e); } 
         G.seats=[null,null,null,null]; 
         renderScene(); 
+    }
+
+    window.showTutorial = function(isManual = false) {
+        playSound('sfx-button');
+        let title = isManual ? "📢 玩法公告" : "💖 欢迎店长大人！";
+        let intro = isManual ? "温故而知新，来看看怎么经营吧~" : "终于等到你啦~ 这里是属于你的<b>「爱的厨房」</b>！<br>这是给你的 <b>200金币</b> 启动资金，快去大胆尝试吧！";
+        let content = `
+            <div style="text-align:left; font-size:13px; color:#5d4037; line-height:1.8; max-height:300px; overflow-y:auto;">
+                <div style="background:#fff3e0; padding:10px; border-radius:8px; margin-bottom:10px;">
+                    <b style="color:#e65100">🍳 烹饪步骤：</b><br>
+                    1. <b>选中锅</b>：点击灶台上的锅。<br>
+                    2. <b>加食材</b>：选中锅后，点击下方食材。<br>
+                    3. <b>自动煮</b>：食材加对后，稍等出锅。<br>
+                    4. <b>上菜</b>：点击顾客端给他。<br>
+                    <span style="color:#aaa;font-size:12px">*黑暗料理🤢记得倒掉或者喂外星人。</span>
+                </div>
+                <div style="background:#e1f5fe; padding:10px; border-radius:8px;">
+                    <b style="color:#0277bd">🌟 经营秘籍：</b><br>
+                    - <b>看行情</b>：菜价每天变，趁便宜囤货！<br>
+                    - <b>特殊客人</b>：<br>
+                      👽 <b>外星人</b>：只吃黑暗料理(🤢)。<br>
+                      🧐 <b>美食家</b>：吃推荐菜(🔥)，给4倍钱但没耐心。
+                </div>
+            </div>
+        `;
+        document.getElementById('tutTitle').innerText = title;
+        document.getElementById('tutIntro').innerHTML = intro;
+        document.getElementById('tutContent').innerHTML = content;
+        
+        let btn = document.getElementById('tutBtn');
+        if(isManual) {
+            btn.innerText = "我学会啦！关闭";
+            btn.onclick = () => { playSound('sfx-button'); document.getElementById('modalTutorial').style.display = 'none'; playBGM(); };
+        } else {
+            btn.innerText = "收下资金，开始经营！💪";
+            btn.onclick = closeTutorial;
+        }
+        document.getElementById('modalTutorial').style.display = 'flex';
+    }
+
+    window.closeTutorial = function() {
+        playSound('sfx-button');
+        playBGM(); // 开始播放音乐
+        document.getElementById('modalTutorial').style.display = 'none';
+        localStorage.setItem('HK_Tutorial_Shown_V2', 'true');
+        if(G.day === 1 && G.totalEarned === 0) {
+            G.money = 200; 
+            updateUI();
+            toast('💰 200金币已到账！');
+        } else {
+            toast('✨ 欢迎回来，店长！');
+        }
     }
 
     function randomizePrices() {
@@ -532,9 +625,10 @@
         }
     }
 
-    function unlockPot() { if(G.lv<10)return toast('需Lv.10'); if(G.money<1000)return toast('需$1000'); if(confirm('解锁?')){G.money-=1000;G.potsUnlocked=2;G.pots[1].status='idle';updateUI();renderScene();saveGame();toast('解锁成功!');} }
+    function unlockPot() { playSound('sfx-button'); if(G.lv<10)return toast('需Lv.10'); if(G.money<1000)return toast('需$1000'); if(confirm('解锁?')){G.money-=1000;G.potsUnlocked=2;G.pots[1].status='idle';updateUI();renderScene();saveGame();toast('解锁成功!');} }
     
     function unlockSeat(idx, cost, reqLv) {
+        playSound('sfx-button');
         if(G.lv < reqLv) return toast(`需 Lv.${reqLv}`);
         if(G.money < cost) return toast(`需 $${cost}`);
         if(confirm(`花费 $${cost} 解锁新座位?`)) {
@@ -547,8 +641,9 @@
         }
     }
 
-    function selPot(i,e){e.stopPropagation();if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
+    function selPot(i,e){e.stopPropagation();playSound('sfx-pot');if(G.pots[i].status!=='cooking'){G.selPot=G.selPot===i?-1:i;renderScene();}}
     function addIng(k){
+        playSound('sfx-button');
         if(G.inv[k]<=0)return toast('没库存');
         if(G.selPot===-1){
             document.querySelectorAll('.pot-hint').forEach(el => {
@@ -561,8 +656,21 @@
         if(p.status!=='idle')return toast('锅忙');
         G.inv[k]--;p.items.push(k);renderScene();
     }
-    function clearPot(){G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
+    function clearPot(){playSound('sfx-button');G.pots[G.selPot]={items:[],status:'idle',res:null};renderScene();}
     function cook(){ 
+        // --- 修改：播放烹饪音效并限制时长为1.5秒 ---
+        let audio = document.getElementById('sfx-cook');
+        if(audio) {
+            audio.currentTime = 0;
+            audio.volume = 1.0;
+            audio.play().catch(e => {});
+            setTimeout(() => {
+                audio.pause();
+                audio.currentTime = 0;
+            }, 1500);
+        }
+        // ----------------------------------------
+
         let p=G.pots[G.selPot]; 
         p.status='cooking'; 
         renderScene(); 
@@ -588,6 +696,7 @@
         
         if(c.type === 'alien') {
             if(p.res.n === '黑暗料理') {
+                playSound('sfx-cash');
                 G.money += 100;
                 G.totalEarned += 100;
                 G.stats.earn += 100;
@@ -600,6 +709,7 @@
         }
 
         if(c.dish.n===p.res.n){ 
+            playSound('sfx-cash');
             if(G.lv < 50) {
                 let xpGain = 0.5;
                 if(G.lv < 10) xpGain = 5;
@@ -654,6 +764,7 @@
         if(c.type === 'critic') {
             G.money = Math.max(0, G.money - 200);
             G.stats.penalty += 200;
+            playSound('sfx-fail'); // 惩罚音效（暂时没给，用fail替代）
             toast('🧐 美食家愤怒离席! -$200');
         } else {
             G.money=Math.max(0,G.money-5); 
@@ -671,6 +782,8 @@
     let isEnding = false;
 
     function startBusiness(){ 
+        playSound('sfx-button');
+        playBGM();
         let minDishes = G.lv >= 20 ? 5 : 3;
         if(G.menu.length < minDishes) return toast(`至少选择 ${minDishes} 道菜`);
 
@@ -886,9 +999,9 @@
         init(); 
     }
     
-    function checkAndOpenMenu() { try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
+    function checkAndOpenMenu() { playSound('sfx-button'); try { openMenu(); } catch(e) { alert('出错啦，请重置存档'); console.error(e); } }
 
-    function showCommon(t, h) { document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
+    function showCommon(t, h) { playSound('sfx-button'); document.getElementById('commTitle').innerText=t; document.getElementById('commBody').innerHTML=h; document.getElementById('modalCommon').style.display='flex'; }
     function openMarket() { 
         let header = `<p style="text-align:center;color:#795548;font-size:14px;margin-bottom:10px;font-weight:bold">今日价格如下，欢迎采购哦！</p>`;
         let grid = `<div class="list-grid">${Object.keys(ITEMS).map(k=>{
@@ -906,7 +1019,7 @@
         }).join('')}</div>`;
         showCommon('🥦 菜市场 (每日浮动)', header + grid); 
     }
-    function buyItem(k) { if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
+    function buyItem(k) { playSound('sfx-cash'); if(G.money>=G.prices[k]){G.money-=G.prices[k];G.inv[k]++;updateUI();openMarket();}else toast('没钱'); }
     function openWarehouse() { showCommon('📦 仓库', `<div class="list-grid">${Object.keys(ITEMS).map(k=>`<div class="grid-item"><div style="font-size:24px">${ITEMS[k].i}</div><div>${ITEMS[k].n}</div><div style="color:#888">x${G.inv[k]}</div></div>`).join('')}</div>`); }
     
     function openRecipes() { 
@@ -918,7 +1031,7 @@
     
     function openAchieve() { showCommon('🏆 成就', `<div style="display:flex;flex-direction:column;gap:10px">${ACHIEVEMENTS.map(a=>{let u=G.achieved.includes(a.id); return `<div style="display:flex;align-items:center;padding:10px;background:${u?'#fff8e1':'#f9f9f9'};border:1px solid ${u?'#ffca28':'#eee'};border-radius:10px"><div style="font-size:24px;margin-right:10px;filter:${u?'none':'grayscale(1)'}">${a.i}</div><div><b>${a.n}</b><br><small>${a.d}</small></div></div>`}).join('')}</div>`); }
     function openUpgrade() { showCommon('🏗️ 装修', `<div style="display:flex;flex-direction:column;gap:10px">${FACILITIES.map(f=>{let cur=G.facLv===f.lv; return `<div style="display:flex;justify-content:space-between;padding:10px;border:1px solid ${cur?'#81c784':'#eee'};background:${cur?'#e8f5e9':'#fff'};border-radius:10px"><div><b>${f.name}</b><small> (${Math.round(f.mult*100)}%)</small></div>${cur?'<small>当前</small>':(G.facLv>f.lv?'<small>已购</small>':(G.lv<f.reqLv?`<small>Lv.${f.reqLv}</small>`:`<button onclick="buyFac(${f.lv})" style="background:#42a5f5;color:white;border:none;padding:2px 8px;border-radius:10px">升级 $${f.cost}</button>`))}</div>`}).join('')}</div>`); }
-    function buyFac(lv) { let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
+    function buyFac(lv) { playSound('sfx-cash'); let f=FACILITIES.find(x=>x.lv===lv); if(G.money>=f.cost){G.money-=f.cost;G.facLv=lv;updateUI();saveGame();openUpgrade();toast('成功');}else toast('钱不够'); }
     function openMenu() { 
         document.getElementById('menuTitle').innerText=`📝 菜单 (${G.menu.length}/8)`; 
         document.getElementById('menuSelection').innerHTML = RECIPES.filter(r=>r.lv<=G.lv).map(r=>{
@@ -928,6 +1041,7 @@
         document.getElementById('modalMenu').style.display='flex';
     }
     window.togMenu = function(id) { 
+        playSound('sfx-button');
         let r=RECIPES.find(x=>x.id===id); 
         if(G.menu.includes(r))G.menu=G.menu.filter(x=>x!==r); 
         else{
@@ -937,13 +1051,14 @@
         openMenu(); 
     }
     
-    function closeModal(){document.querySelectorAll('.modal-mask').forEach(e=>e.style.display='none');}
+    function closeModal(){playSound('sfx-button');document.querySelectorAll('.modal-mask').forEach(e=>e.style.display='none');}
     function toast(m){let t=document.getElementById('toast');t.innerText=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,1000);}
     
     function checkAch(){ 
         ACHIEVEMENTS.forEach(a=>{
             if(!G.achieved.includes(a.id)&&a.c(G)){
                 G.achieved.push(a.id);
+                playSound('sfx-win');
                 G.money += 100; 
                 updateUI();
                 toast(`🏆 ${a.n} (金币+100)`);

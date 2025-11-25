@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>💖 爱的厨房 - 加载诊断版</title>
+    <title>💖 爱的厨房 - 最终完美版</title>
     <style>
         :root {
             --bg: #fff3e0;
@@ -343,7 +343,6 @@
         <div class="loading-bar-box" style="display:block;"><div class="loading-fill" id="loadBar"></div></div>
         <p id="loadText" style="font-size:12px; color:#888;">0%</p>
         
-        <!-- 新增：加载中的跳过按钮 -->
         <div style="margin-top:20px;">
              <span onclick="skipAssets()" style="font-size:12px; color:#999; text-decoration:underline; cursor:pointer;">
                 一直卡住？点我强制进入(无声)
@@ -525,7 +524,9 @@
         disabled: false, 
         
         files: {
-            'bgm': 'music/ztq.mp3', // 确保你真的重命名了文件！
+            // 确保文件名是 bgm.mp3，且是清洗过无封面的版本
+            // 加上 v=5 强制手机重新下载，不读缓存
+            'bgm': 'music/bgm.mp3?v=5', 
             'button': 'sound/button.mp3',
             'pot': 'sound/pot.mp3',
             'cook': 'sound/cooking.mp3',
@@ -563,9 +564,8 @@
                     this.buffers[key] = audioBuffer;
                 } catch (e) {
                     console.warn("Load failed: " + key, e);
-                    // 弹窗警告用户，但只警告一次BGM的
                     if(key === 'bgm') {
-                        alert("BGM加载失败:\n" + url + "\n原因: 找不到文件或格式错误\n建议: 确保文件名是ztq.mp3且全是小写");
+                        alert("BGM加载失败:\n" + url + "\n可能原因: 缓存未更新或格式不纯净");
                     }
                 }
                 loaded++;
